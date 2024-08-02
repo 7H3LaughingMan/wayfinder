@@ -1,0 +1,12 @@
+{
+  "_id": "j3nUk5W6T1W86xNr",
+  "_key": "!wayfinder-macros!j3nUk5W6T1W86xNr",
+  "command": "let base64 = await canvas.app.renderer.extract.base64(canvas.visibility.explored, \"image/webp\", 1);\n\nlet a = document.createElement(\"a\");\na.href = base64;\na.download = \"Fog.webp\";\na.click()",
+  "img": "icons/tools/navigation/sextant-steel-blue.webp",
+  "name": "Export Fog Exploration",
+  "ownership": {
+    "default": 1
+  },
+  "scope": "global",
+  "type": "script"
+}

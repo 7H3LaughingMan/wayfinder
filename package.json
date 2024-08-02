@@ -1,0 +1,10 @@
+{
+  "name": "wayfinder",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "license": "MIT",
+  "dependencies": {
+    "@foundryvtt/foundryvtt-cli": "^1.0.3"
+  }
+}

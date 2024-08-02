@@ -1,0 +1,13 @@
+{
+    "pf2e-compass": {
+        "controls": {
+            "pathfinding": "Pathfinding"
+        },
+        "settings": {
+            "fogExploration": {
+                "name": "Fog Exploration Restriction",
+                "hint": "When enabled it will limit pathfinding only through parts of the map that have been explored."
+            }
+        }
+    }
+}
