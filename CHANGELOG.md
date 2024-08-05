@@ -1,3 +1,7 @@
+# 6.5.0
+
+- Dropping the PF2e portion of the module name and renaming it to Wayfinder. This module is going to support SF2e as well when it becomes it's own system.
+
 # 6.4.1
 
 - Added a macro that can be used to export an image of the Fog Exploration.

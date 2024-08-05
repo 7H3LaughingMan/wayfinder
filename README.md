@@ -1,5 +1,5 @@
-# PF2e Compass
+# Wayfinder
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Z8Z6ZHDNA)
 
-A simple module that gives you access to a compass to help navigate treacherous paths. It does this by adding pathfinding capabilities to the built-in PF2e token drag measurement tool.
+A wayfinder for your everyday needs! It let's you navigate treacherous paths and plan the shortest route to your destination.

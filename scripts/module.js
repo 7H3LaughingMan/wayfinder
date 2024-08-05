@@ -26,7 +26,7 @@ Hooks.on("getSceneControlButtons", function (controls) {
 
     tokenControls.tools.splice(rulerIndex + 1, 0, {
         name: "pathfinding",
-        title: "pf2e-compass.controls.pathfinding",
+        title: "wayfinder.controls.pathfinding",
         icon: "fa-solid fa-route",
         toggle: true,
         active: game.settings.get(MODULE_ID, "enablePathfinding"),

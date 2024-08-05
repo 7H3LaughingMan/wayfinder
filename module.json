@@ -63,15 +63,17 @@
         "id": "lib-wrapper",
         "type": "module",
         "manifest": "https://github.com/ruipin/fvtt-lib-wrapper/releases/latest/download/module.json",
-        "compatibility": {}
+        "compatibility": {
+          "minimum": "1.12.14.0"
+        }
       }
     ]
   },
-  "url": "https://github.com/7H3LaughingMan/pf2e-compass",
-  "manifest": "https://github.com/7H3LaughingMan/pf2e-compass/raw/main/module.json",
-  "download": "https://github.com/7H3LaughingMan/pf2e-compass/archive/refs/heads/main.zip",
-  "license": "https://github.com/7H3LaughingMan/pf2e-compass/blob/main/LICENSE",
-  "readme": "https://github.com/7H3LaughingMan/pf2e-compass/blob/main/README.md",
-  "bugs": "https://github.com/7H3LaughingMan/pf2e-compass/issues",
-  "changelog": "https://github.com/7H3LaughingMan/pf2e-compass/blob/main/CHANGELOG.md"
+  "url": "https://github.com/7H3LaughingMan/wayfinder",
+  "manifest": "https://github.com/7H3LaughingMan/wayfinder/raw/main/module.json",
+  "download": "https://github.com/7H3LaughingMan/wayfinder/archive/refs/heads/main.zip",
+  "license": "https://github.com/7H3LaughingMan/wayfinder/blob/main/LICENSE",
+  "readme": "https://github.com/7H3LaughingMan/wayfinder/blob/main/README.md",
+  "bugs": "https://github.com/7H3LaughingMan/wayfinder/issues",
+  "changelog": "https://github.com/7H3LaughingMan/wayfinder/blob/main/CHANGELOG.md"
 }

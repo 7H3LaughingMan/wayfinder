@@ -14,6 +14,18 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+      
+      - name: Build Packs
+        run: |
+          npm ci
+          node build.js
+
       - name: Extract Version From Tag
         id: get_version
         uses: battila7/get-version-action@v2
@@ -29,7 +41,7 @@ jobs:
           download: https://github.com/${{github.repository}}/releases/download/${{github.event.release.tag_name}}/module.zip
 
       - name: Create Module Archive
-        run: zip -r ./module.zip module.json README.md LICENSE scripts/ languages/ packs/ wasm/
+        run: zip -r module.zip module.json README.md LICENSE scripts/ languages/ packs/ wasm/ -x "packs/src/*"
 
       - name: Update Release With Files
         id: create_version_release

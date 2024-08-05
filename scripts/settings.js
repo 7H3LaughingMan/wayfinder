@@ -9,8 +9,8 @@ export function registerSettings() {
     });
 
     game.settings.register(MODULE_ID, "fogExploration", {
-        name: "pf2e-compass.settings.fogExploration.name",
-        hint: "pf2e-compass.settings.fogExploration.hint",
+        name: "wayfinder.settings.fogExploration.name",
+        hint: "wayfinder.settings.fogExploration.hint",
         scope: "world",
         config: true,
         type: Boolean,
