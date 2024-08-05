@@ -1,3 +1,7 @@
+# 6.5.1
+
+- The path found by other users is now visible to everyone when the ruler is visible to them.
+
 # 6.5.0
 
 - Dropping the PF2e portion of the module name and renaming it to Wayfinder. This module is going to support SF2e as well when it becomes it's own system.

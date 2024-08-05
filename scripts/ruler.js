@@ -39,13 +39,19 @@ export function wrapRuler() {
     libWrapper.register(MODULE_ID, "CONFIG.Canvas.rulerClass.prototype._getMeasurementDestination", function (wrapped, point, { snap = true } = {}) {
         let destination = wrapped(point, { snap });
 
-        if (this.token && this.wayfinder && game.settings.get(MODULE_ID, "enablePathfinding")) {
-            let path = this.wayfinder.findPath(getPath(this.history, this.waypoints), destination);
+        if (this.user == game.user) {
+            if (this.token && this.wayfinder && game.settings.get(MODULE_ID, "enablePathfinding")) {
+                let path = this.wayfinder.findPath(getPath(this.history, this.waypoints), destination);
 
-            if (path && path.length > 1) {
-                destination.path = path;
-            } else {
-                delete destination.path;
+                if (path && path.length > 1) {
+                    destination.path = path;
+                } else {
+                    delete destination.path;
+                }
+            }
+        } else {
+            if ("path" in point) {
+                destination.path = point.path;
             }
         }
 
