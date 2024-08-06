@@ -1,3 +1,8 @@
+# 6.5.2
+
+- Fix "Export Fog Exploration" macro
+- Added Polish Translation (Thanks Lioheart)
+
 # 6.5.1
 
 - The path found by other users is now visible to everyone when the ruler is visible to them.
