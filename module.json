@@ -23,6 +23,11 @@
       "lang": "en",
       "name": "English",
       "path": "languages/en.json"
+    },
+    {
+      "lang": "pl",
+      "name": "Polish",
+      "path": "languages/pl.json"
     }
   ],
   "packs": [

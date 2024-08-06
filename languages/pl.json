@@ -1,0 +1,13 @@
+{
+    "pf2e-compass": {
+        "controls": {
+            "pathfinding": "Wyszukiwanie ścieżek"
+        },
+        "settings": {
+            "fogExploration": {
+                "name": "Ograniczenie eksploracji we mgle",
+                "hint": "Po włączeniu ograniczy wyszukiwanie ścieżek tylko do części mapy, które zostały już zbadane."
+            }
+        }
+    }
+}
