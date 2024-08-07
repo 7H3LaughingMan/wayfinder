@@ -5,6 +5,12 @@
   "type": "module",
   "license": "MIT",
   "dependencies": {
-    "@foundryvtt/foundryvtt-cli": "^1.0.3"
+    "chalk": "^5.2.0",
+    "classic-level": "^1.2.0",
+    "esm": "^3.2.25",
+    "js-yaml": "^4.1.0",
+    "mkdirp": "^3.0.0",
+    "nedb-promises": "^6.2.1",
+    "yargs": "^17.7.1"
   }
 }
