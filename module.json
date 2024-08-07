@@ -2,7 +2,7 @@
   "id": "wayfinder",
   "title": "Wayfinder",
   "description": "A wayfinder for your everyday needs! It let's you navigate treacherous paths and plan the shortest route to your destination.",
-  "version": "6.5.2",
+  "version": "6.5.3",
   "compatibility": {
     "minimum": "12.327",
     "verified": "12.330",

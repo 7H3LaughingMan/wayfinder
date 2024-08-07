@@ -1,3 +1,7 @@
+# 6.5.3
+
+- Fix for hexagonal token shapes not being centered.
+
 # 6.5.2
 
 - Fix "Export Fog Exploration" macro
