@@ -3,6 +3,11 @@ import { Wayfinder } from "../wasm/pf2e-astar.js"
 import { getPath } from "./util.js";
 
 export function wrapRuler() {
+    if (CONFIG.Canvas.rulerClass.name !== "RulerPF2e") {
+        ui.notifications.error("Wayfinder has been disabled because RulerPF2e is not the default ruler!");
+        return;
+    }
+
     libWrapper.register(MODULE_ID, "CONFIG.Canvas.rulerClass.prototype._startMeasurement", function (wrapped, origin, { snap = true, token } = {}) {
         if (this.state !== Ruler.STATES.INACTIVE) return;
 
