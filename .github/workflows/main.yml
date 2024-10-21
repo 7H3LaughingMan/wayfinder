@@ -49,8 +49,8 @@ jobs:
       - uses: release-flow/keep-a-changelog-action@v3
         id: changelog
         with:
-        command: query
-        version: ${{ steps.get_version.outputs.version-without-v }}
+          command: query
+          version: ${{ steps.get_version.outputs.version-without-v }}
 
       - name: Update Release With Files
         id: create_version_release
