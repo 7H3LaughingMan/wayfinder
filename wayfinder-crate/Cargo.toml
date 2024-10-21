@@ -1,0 +1,22 @@
+[package]
+name = "wayfinder-crate"
+edition = "2021"
+authors = ["7H3LaughingMan"]
+license = "MIT"
+
+[profile.release]
+opt-level = 3
+debug = false
+strip = "debuginfo"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+bytemuck = { version = "1.19.0", features = ["derive", "extern_crate_alloc"] }
+console_error_panic_hook = "0.1.7"
+js-sys = "0.3.72"
+pathfinding = "4.11.0"
+rapier2d = "0.22.0"
+wasm-bindgen = { version = "0.2.95" }
+web-sys = { version = "0.3.72", features = ["console"] }
