@@ -23,7 +23,7 @@ impl Image {
     }
 
     fn get_pixel(&self, x: i32, y: i32) -> Pixel {
-        if !self.scaled_bounds.contains(Point { x: x as f32, y: x as f32 }) {
+        if !self.scaled_bounds.contains(Point { x: x as f32, y: y as f32 }) {
             return Pixel { a: 0, r: 0, g: 0, b: 0 };
         }
 
