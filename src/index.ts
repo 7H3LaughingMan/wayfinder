@@ -1,18 +1,25 @@
+import { ActorPF2e, CombatantPF2e, EncounterPF2e, EncounterTrackerPF2e } from "foundry-pf2e";
 import init, { Wayfinder } from "wayfinder-crate";
 
 declare global {
     interface ClientSettings {
         get(module: "wayfinder", setting: "enablePathfinding"): boolean;
         get(module: "wayfinder", setting: "fogExploration"): boolean;
-        //get(module: "wayfinder", setting: "enableMovementHistory"): boolean;
+        get(module: "wayfinder", setting: "enableMovementHistory"): boolean;
+        get(module: "wayfinder", setting: "enableDifficultTerrain"): boolean;
+        get(module: "wayfinder", setting: "enableActionIcons"): boolean;
 
         set(module: "wayfinder", setting: "enablePathfinding", value: boolean): Promise<boolean>;
         set(module: "wayfinder", setting: "fogExploration", value: boolean): Promise<boolean>;
-        //set(module: "wayfinder", setting: "enableMovementHistory", value: boolean): Promise<boolean>;
+        set(module: "wayfinder", setting: "enableMovementHistory", value: boolean): Promise<boolean>;
+        set(module: "wayfinder", setting: "enableDifficultTerrain", value: boolean): Promise<boolean>;
+        set(module: "wayfinder", setting: "enableActionIcons", value: boolean): Promise<boolean>;
     }
 
     interface TokenDocument {
-        //getFlag(scope: "wayfinder", key: "movementHistory"): WayfinderMovementHistory | undefined;
+        getFlag(scope: "wayfinder", key: "movementHistory"): WayfinderMovementHistory | undefined;
+        setFlag(scope: "wayfinder", key: "movementHistory", value: WayfinderMovementHistory): Promise<this>;
+        unsetFlag(scope: "wayfinder", key: "movementHistory"): Promise<this>;
     }
 
     interface Ruler {
@@ -20,13 +27,17 @@ declare global {
     }
 }
 
-//interface WayfinderMovementHistory {}
+interface WayfinderMovementHistory {
+    combatId: string;
+    history: RulerMeasurementHistoryWaypoint[];
+}
 
 type WayfinderPoint = Point & {
     path: Point[];
 };
 
 function isWayfinderPoint(point: Point | null): point is WayfinderPoint {
+    game.combat?.id;
     if (point === null) return false;
     return (point as WayfinderPoint).path !== undefined;
 }
@@ -43,6 +54,21 @@ function getPath(history: RulerMeasurementHistoryWaypoint[], waypoints: Point[],
     }
 
     return path;
+}
+
+function getActionSymbols(count: number): string {
+    let symbols = [];
+
+    while (count > 0) {
+        symbols.push("◆".repeat(count > 10 ? 10 : count));
+        count -= 10;
+    }
+
+    return "\r\n" + symbols.join("\r\n");
+}
+
+function getString(value: number): string {
+    return `${Math.round(value * 100) / 100}`;
 }
 
 Hooks.once("init", async () => {
@@ -63,7 +89,7 @@ Hooks.once("init", async () => {
         default: true,
     });
 
-    /*game.settings.register("wayfinder", "enableMovementHistory", {
+    game.settings.register("wayfinder", "enableMovementHistory", {
         name: "wayfinder.settings.enableMovementHistory.name",
         hint: "wayfinder.settings.enableMovementHistory.hint",
         scope: "world",
@@ -71,7 +97,27 @@ Hooks.once("init", async () => {
         requiresReload: true,
         type: Boolean,
         default: true,
-    });*/
+    });
+
+    game.settings.register("wayfinder", "enableDifficultTerrain", {
+        name: "wayfinder.settings.enableDifficultTerrain.name",
+        hint: "wayfinder.settings.enableDifficultTerrain.hint",
+        scope: "world",
+        config: true,
+        requiresReload: true,
+        type: Boolean,
+        default: true,
+    });
+
+    game.settings.register("wayfinder", "enableActionIcons", {
+        name: "wayfinder.settings.enableActionIcons.name",
+        hint: "wayfinder.settings.enableActionIcons.hint",
+        scope: "client",
+        config: true,
+        requiresReload: false,
+        type: Boolean,
+        default: true,
+    });
 
     await init();
 });
@@ -85,19 +131,19 @@ Hooks.once("ready", () => {
     libWrapper.register<Ruler, Ruler["_startMeasurement"]>(
         "wayfinder",
         "CONFIG.Canvas.rulerClass.prototype._startMeasurement",
-        function (this: Ruler, wrapped: Ruler["_startMeasurement"], ...args: Parameters<Ruler["_startMeasurement"]>) {
+        function (this: Ruler, wrapped: Ruler["_startMeasurement"], origin: Point, { snap = true, token } = {}) {
             if (this.state !== Ruler.STATES.INACTIVE) return;
 
-            if (game.settings.get("wayfinder", "enablePathfinding") && args[1]?.token) {
+            if (game.settings.get("wayfinder", "enablePathfinding") && token) {
                 this.wayfinder = new Wayfinder();
 
                 this.wayfinder.addGrid(canvas.grid);
-                this.wayfinder.addToken(args[1].token);
+                this.wayfinder.addToken(token);
                 this.wayfinder.addBounds(canvas.scene?.dimensions.sceneRect);
                 this.wayfinder.addWalls(canvas.walls.placeables.map((w) => w.document));
 
                 if (canvas.scene?.fog.exploration && game.settings.get("wayfinder", "fogExploration")) {
-                    if (!game.settings.get("pf2e", "gmVision") && args[1].token.document.sight.enabled) {
+                    if (!game.settings.get("pf2e", "gmVision") && token.document.sight.enabled) {
                         let scale = 0.1;
                         let sceneRect = canvas.dimensions.sceneRect;
                         let scaledRect = new PIXI.Rectangle(
@@ -122,7 +168,7 @@ Hooks.once("ready", () => {
                 }
             }
 
-            wrapped(...args);
+            wrapped(origin, { snap, token });
         }
     );
 
@@ -141,10 +187,10 @@ Hooks.once("ready", () => {
     libWrapper.register<Ruler, Ruler["_getMeasurementDestination"]>(
         "wayfinder",
         "CONFIG.Canvas.rulerClass.prototype._getMeasurementDestination",
-        function (this: Ruler, wrapped: Ruler["_getMeasurementDestination"], ...args: Parameters<Ruler["_getMeasurementDestination"]>) {
-            let destination = wrapped(...args);
+        function (this: Ruler, wrapped: Ruler["_getMeasurementDestination"], point: Point, { snap = true } = {}) {
+            let destination = wrapped(point, { snap });
 
-            if (this.user == game.user && args[1]?.snap) {
+            if (this.user == game.user && snap) {
                 if (this.token && this.wayfinder && game.settings.get("wayfinder", "enablePathfinding")) {
                     let path = this.wayfinder.findPath(getPath(this.history, this.waypoints), destination);
                     let mode =
@@ -204,12 +250,12 @@ Hooks.once("ready", () => {
     libWrapper.register<Ruler, Ruler["_addWaypoint"]>(
         "wayfinder",
         "CONFIG.Canvas.rulerClass.prototype._addWaypoint",
-        function (this: Ruler, _wrapped: Ruler["_addWaypoint"], ...args: Parameters<Ruler["_addWaypoint"]>) {
+        function (this: Ruler, _wrapped: Ruler["_addWaypoint"], point: Point, { snap = true } = {}) {
             if (this.state !== Ruler.STATES.STARTING && this.state !== Ruler.STATES.MEASURING) return;
             const waypoint =
                 this.state === Ruler.STATES.STARTING
-                    ? this._getMeasurementOrigin(args[0], { snap: args[1]?.snap })
-                    : this._getMeasurementDestination(args[0], { snap: args[1]?.snap });
+                    ? this._getMeasurementOrigin(point, { snap })
+                    : this._getMeasurementDestination(point, { snap });
 
             if (isWayfinderPoint(waypoint)) {
                 this.waypoints.push(...waypoint.path);
@@ -218,8 +264,76 @@ Hooks.once("ready", () => {
             }
 
             this._state = Ruler.STATES.MEASURING;
-            const destination = this.destination ?? args[0];
-            this.measure({ x: destination.x, y: destination.y }, { snap: args[1]?.snap, force: true });
+            const destination = this.destination ?? point;
+            this.measure({ x: destination.x, y: destination.y }, { snap, force: true });
+        }
+    );
+
+    libWrapper.register<Ruler, Ruler["_getMeasurementHistory"]>(
+        "wayfinder",
+        "CONFIG.Canvas.rulerClass.prototype._getMeasurementHistory",
+        function (this: Ruler, _wrapped: Ruler["_getMeasurementHistory"]) {
+            if (this.token && game.combat?.started && game.settings.get("wayfinder", "enableMovementHistory")) {
+                if (this.token.inCombat) {
+                    return this.token.document.getFlag("wayfinder", "movementHistory")?.history;
+                }
+            }
+        }
+    );
+
+    libWrapper.register<Ruler, Ruler["_postMove"]>(
+        "wayfinder",
+        "CONFIG.Canvas.rulerClass.prototype._postMove",
+        async function (this: Ruler, _wrapped: Ruler["_postMove"], token: Maybe<Token>) {
+            if (game.combat?.started && game.settings.get("wayfinder", "enableMovementHistory")) {
+                if (token?.document.inCombat) {
+                    token.document.setFlag("wayfinder", "movementHistory", {
+                        combatId: game.combat.id,
+                        history: this._createMeasurementHistory(),
+                    });
+                }
+            }
+        }
+    );
+
+    libWrapper.register<Ruler, Ruler["_getSegmentLabel"]>(
+        "wayfinder",
+        "CONFIG.Canvas.rulerClass.prototype._getSegmentLabel",
+        function (this: Ruler, _wrapped: Ruler["_getSegmentLabel"], segment: RulerMeasurementSegment) {
+            if (segment.teleport) return "";
+            const units = canvas.grid.units;
+            let label = !game.settings.get("wayfinder", "enableDifficultTerrain")
+                ? getString(segment.distance)
+                : segment.distance == segment.cost
+                  ? getString(segment.distance)
+                  : `${getString(segment.cost)} / ${getString(segment.distance)}`;
+            if (units) label += ` ${units}`;
+
+            if (segment.last) {
+                if (game.settings.get("wayfinder", "enableDifficultTerrain") && segment.cumulativeDistance != segment.cumulativeCost) {
+                    label = "⚠ " + label;
+                }
+
+                label += !game.settings.get("wayfinder", "enableDifficultTerrain")
+                    ? ` [${getString(segment.cumulativeDistance)}`
+                    : segment.cumulativeDistance == segment.cumulativeCost
+                      ? ` [${getString(segment.cumulativeDistance)}`
+                      : ` [${getString(segment.cumulativeCost)} / ${getString(segment.cumulativeDistance)}`;
+                if (units) label += ` ${units}`;
+                label += "]";
+
+                const actor = this.token?.actor as ActorPF2e;
+
+                if (game.settings.get("wayfinder", "enableActionIcons") && actor && actor.isOfType("creature")) {
+                    const actionCost = Math.ceil(
+                        (game.settings.get("wayfinder", "enableDifficultTerrain") ? segment.cumulativeCost : segment.cumulativeDistance) /
+                            actor.system.attributes.speed.total
+                    );
+                    if (!isNaN(actionCost) && actionCost > 0) label += getActionSymbols(actionCost);
+                }
+            }
+
+            return label;
         }
     );
 });
@@ -241,6 +355,29 @@ Hooks.on("getSceneControlButtons", (controls: SceneControl[]) => {
             onClick: () => {
                 const newStatus = !game.settings.get("wayfinder", "enablePathfinding");
                 game.settings.set("wayfinder", "enablePathfinding", newStatus);
+            },
+        });
+    }
+});
+
+Hooks.on("pf2e.startTurn", (combatant: CombatantPF2e, _encounter: EncounterPF2e, _userId: string) => {
+    if (game.settings.get("wayfinder", "enableMovementHistory")) {
+        combatant.token?.unsetFlag("wayfinder", "movementHistory");
+    }
+});
+
+Hooks.on("getCombatTrackerEntryContext", (_application: EncounterTrackerPF2e<EncounterPF2e>, entryOptions: ContextMenuEntry[]) => {
+    if (game.settings.get("wayfinder", "enableMovementHistory")) {
+        entryOptions.splice(1, 0, {
+            name: "wayfinder.clearMovementHistory",
+            icon: '<i class="fas fa-eraser"></i>',
+            condition: (li) => {
+                const combatant = game.combat?.combatants.get(li.data("combatant-id"));
+                return combatant?.token?.getFlag("wayfinder", "movementHistory") != undefined;
+            },
+            callback: (li) => {
+                const combatant = game.combat?.combatants.get(li.data("combatant-id"));
+                if (combatant) combatant.token?.unsetFlag("wayfinder", "movementHistory");
             },
         });
     }
