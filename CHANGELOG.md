@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [6.7.1] - 2024-11-05
+
 ### Added
 
 - Added a custom font that is used for the action icons.
@@ -43,7 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Fixed a problem with checking fog exploration where it was slightly off when checking pixels
 - Improved Fog Exploration
 
-[Unreleased]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.7.0...HEAD
+[Unreleased]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.7.1...HEAD
+[6.7.1]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.7.0...v6.7.1
 [6.7.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.6.1...v6.7.0
 [6.6.1]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.6.0...v6.6.1
 [6.6.0]: https://github.com/7H3LaughingMan/wayfinder/releases/tag/v6.6.0
