@@ -1,12 +1,25 @@
 {
     "wayfinder": {
+        "clearMovementHistory": "Wyczyść historię ruchu",
         "controls": {
             "pathfinding": "Wyszukiwanie ścieżek"
         },
         "settings": {
+            "enableActionIcons": {
+                "name": "Ikony akcji",
+                "hint": "Po włączeniu wyświetlana jest liczba akcji potrzebnych do przesunięcia tokena."
+            },
+            "enableDifficultTerrain": {
+                "name": "Trudny teren",
+                "hint": "Po włączeniu wyświetlany będzie dodatkowy koszt poruszania się po trudnym terenie."
+            },
+            "enableMovementHistory": {
+                "name": "Historia ruchów",
+                "hint": "Po włączeniu śledzi ruch tokena podczas walki i resetuje się na początku tury tokena."
+            },
             "fogExploration": {
                 "name": "Ograniczenie eksploracji we mgle",
-                "hint": "Po włączeniu ograniczy wyszukiwanie ścieżek tylko do części mapy, które zostały już zbadane."
+                "hint": "Po włączeniu tej opcji wyszukiwanie ścieżek będzie ograniczone tylko do tych części mapy, które zostały już zbadane."
             }
         }
     }
