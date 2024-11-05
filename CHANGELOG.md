@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [6.7.2] - 2024-11-05
+
+### Added
+
+- Added known module conflicts.
+
+### Changed
+
+- Action icons will only display if the grid's scale is set to 5 ft.
+
 ## [6.7.1] - 2024-11-05
 
 ### Added
@@ -45,7 +55,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Fixed a problem with checking fog exploration where it was slightly off when checking pixels
 - Improved Fog Exploration
 
-[Unreleased]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.7.1...HEAD
+[Unreleased]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.7.2...HEAD
+[6.7.2]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.7.1...v6.7.2
 [6.7.1]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.7.0...v6.7.1
 [6.7.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.6.1...v6.7.0
 [6.6.1]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.6.0...v6.6.1

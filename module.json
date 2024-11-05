@@ -2,7 +2,7 @@
     "id": "wayfinder",
     "title": "Wayfinder",
     "description": "A wayfinder for your everyday needs! It let's you navigate treacherous paths and plan the shortest route to your destination.",
-    "version": "",
+    "version": "6.7.2",
     "compatibility": {
         "minimum": "12.331",
         "verified": "12.331",
@@ -67,6 +67,26 @@
                 "compatibility": {
                     "minimum": "1.13.2.0"
                 }
+            }
+        ],
+        "conflicts": [
+            {
+                "id": "drag-ruler",
+                "type": "module",
+                "compatibility": {},
+                "reason": "PF2e System Ruler Conflict"
+            },
+            {
+                "id": "elevationruler",
+                "type": "module",
+                "compatibility": {},
+                "reason": "PF2e System Ruler Conflict"
+            },
+            {
+                "id": "pf2e-ruler",
+                "type": "module",
+                "compatibility": {},
+                "reason": "PF2e System Ruler Conflict"
             }
         ]
     },

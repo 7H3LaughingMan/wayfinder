@@ -356,11 +356,14 @@ Hooks.once("ready", () => {
                 const actor = this.token?.actor as ActorPF2e;
 
                 if (game.settings.get("wayfinder", "enableActionIcons") && actor && actor.isOfType("creature")) {
-                    const actionCost = Math.ceil(
-                        (game.settings.get("wayfinder", "enableDifficultTerrain") ? segment.cumulativeCost : segment.cumulativeDistance) /
-                            actor.system.attributes.speed.total
-                    );
-                    label += getActionSymbols(actionCost);
+                    if (canvas.grid.distance == 5 && canvas.grid.units == "ft") {
+                        const actionCost = Math.ceil(
+                            (game.settings.get("wayfinder", "enableDifficultTerrain")
+                                ? segment.cumulativeCost
+                                : segment.cumulativeDistance) / actor.system.attributes.speed.total
+                        );
+                        label += getActionSymbols(actionCost);
+                    }
                 }
             }
 
