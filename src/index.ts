@@ -59,9 +59,11 @@ function getPath(history: RulerMeasurementHistoryWaypoint[], waypoints: Point[],
 function getActionSymbols(count: number): string {
     let symbols = [];
 
+    if (!isFinite(count)) return "";
+
     while (count > 0) {
-        symbols.push("◆".repeat(count > 10 ? 10 : count));
-        count -= 10;
+        symbols.push((count > 6 ? Array(6) : Array(count)).fill("◆").join(" "));
+        count -= 6;
     }
 
     return "\r\n" + symbols.join("\r\n");
@@ -72,6 +74,15 @@ function getString(value: number): string {
 }
 
 Hooks.once("init", async () => {
+    CONFIG.fontDefinitions["Wayfinder Icons"] = {
+        editor: false,
+        fonts: [
+            {
+                urls: ["modules/wayfinder/fonts/wayfinder-icons.woff2"],
+            },
+        ],
+    };
+
     game.settings.register("wayfinder", "enablePathfinding", {
         name: "enablePathfinding",
         scope: "client",
@@ -221,7 +232,27 @@ Hooks.once("ready", () => {
 
             for (let i = 1; i < path.length; i++) {
                 const label =
-                    (this.labels.children.at(i - 1) as PreciseText) ?? this.labels.addChild(new PreciseText("", CONFIG.canvasTextStyle));
+                    (this.labels.children.at(i - 1) as PreciseText) ??
+                    this.labels.addChild(
+                        new PreciseText(
+                            "",
+                            new PIXI.TextStyle({
+                                fontFamily: ["Wayfinder Icons", "Signika"],
+                                fontSize: 36,
+                                fill: "#FFFFFF",
+                                stroke: "#111111",
+                                strokeThickness: 1,
+                                dropShadow: true,
+                                dropShadowColor: "#000000",
+                                dropShadowBlur: 2,
+                                dropShadowAngle: 0,
+                                dropShadowDistance: 0,
+                                align: "center",
+                                wordWrap: false,
+                                padding: 1,
+                            })
+                        )
+                    );
                 const ray = new Ray(path[i - 1], path[i]);
                 segments.push({
                     ray,
@@ -329,7 +360,7 @@ Hooks.once("ready", () => {
                         (game.settings.get("wayfinder", "enableDifficultTerrain") ? segment.cumulativeCost : segment.cumulativeDistance) /
                             actor.system.attributes.speed.total
                     );
-                    if (!isNaN(actionCost) && actionCost > 0) label += getActionSymbols(actionCost);
+                    label += getActionSymbols(actionCost);
                 }
             }
 

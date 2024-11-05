@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Added a custom font that is used for the action icons.
+
+### Fixed
+
+- A problem with it locking up when trying to move a create with 0 land speed.
+
 ## [6.7.0] - 2024-11-04
 
 ### Added
