@@ -1,13 +1,18 @@
 {
-    "wayfinder": {
-        "controls": {
-            "pathfinding": "Wyszukiwanie ścieżek"
-        },
-        "settings": {
-            "fogExploration": {
-                "name": "Ograniczenie eksploracji we mgle",
-                "hint": "Po włączeniu ograniczy wyszukiwanie ścieżek tylko do części mapy, które zostały już zbadane."
-            }
-        }
+  "wayfinder": {
+    "controls": {
+      "pathfinding": "Wyszukiwanie ścieżek"
+    },
+    "settings": {
+      "enableActionIcons": {
+      },
+      "enableDifficultTerrain": {
+      },
+      "enableMovementHistory": {
+      },
+      "fogExploration": {
+        "hint": "Po włączeniu ograniczy wyszukiwanie ścieżek tylko do części mapy, które zostały już zbadane."
+      }
     }
+  }
 }
