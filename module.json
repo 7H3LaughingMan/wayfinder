@@ -2,7 +2,7 @@
     "id": "wayfinder",
     "title": "Wayfinder",
     "description": "A wayfinder for your everyday needs! It let's you navigate treacherous paths and plan the shortest route to your destination.",
-    "version": "6.7.2",
+    "version": "6.8.0",
     "compatibility": {
         "minimum": "12.331",
         "verified": "12.331",
@@ -55,7 +55,7 @@
                 "type": "system",
                 "manifest": "https://github.com/foundryvtt/pf2e/releases/latest/download/system.json",
                 "compatibility": {
-                    "minimum": "6.6.0"
+                    "minimum": "6.7.2"
                 }
             }
         ],

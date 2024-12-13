@@ -1,95 +1,108 @@
 use crate::{
     enums::Grid,
-    exports::{Image, TokenShape, Walls},
-    traits::{AStar, JsDeserialize, JsSerialize},
-    types::{Point, Rectangle},
+    exports::{Image, Walls},
+    traits::{AStar, JsDeserialize, JsDeserializeVector, JsSerialize},
+    types::{GLTexture, Point, Rectangle},
 };
-use pathfinding::grid;
 use wasm_bindgen::prelude::*;
+use web_sys::WebGl2RenderingContext;
 
 #[wasm_bindgen]
 extern "C" {
-    #[wasm_bindgen(typescript_type = "SquareGrid | HexagonalGrid | GridlessGrid")]
+    #[derive(Debug)]
+    #[wasm_bindgen(
+        typescript_type = "foundry.grid.SquareGrid | foundry.grid.HexagonalGrid | foundry.grid.GridlessGrid"
+    )]
     pub type JsGrid;
 
+    #[derive(Debug)]
     #[wasm_bindgen(typescript_type = "Point")]
     pub type JsPoint;
 
-    #[wasm_bindgen(typescript_type = "Rectangle | undefined")]
+    #[derive(Debug)]
+    #[wasm_bindgen(typescript_type = "Rectangle")]
     pub type JsRectangle;
 
+    #[derive(Debug)]
     #[wasm_bindgen(typescript_type = "Token")]
     pub type JsToken;
 
+    #[derive(Debug)]
     #[wasm_bindgen(typescript_type = "WallDocument")]
     pub type JsWallDocument;
+
+    #[derive(Debug)]
+    #[wasm_bindgen(typescript_type = "GLTexture")]
+    pub type JsGLTexture;
 }
 
 #[wasm_bindgen]
 pub struct Wayfinder {
-    bounds: Option<Rectangle>,
+    bounds: Rectangle,
     explored: Option<Image>,
-    grid: Option<Grid>,
-    token_shape: Option<TokenShape>,
-    walls: Option<Walls>,
+    grid: Grid,
+    offset: Option<Point>,
+    walls: Walls,
 }
 
 #[wasm_bindgen]
 impl Wayfinder {
     #[wasm_bindgen(constructor)]
-    pub fn new() -> Wayfinder {
-        Wayfinder { bounds: None, explored: None, grid: None, token_shape: None, walls: None }
+    pub fn new(bounds: JsRectangle, grid: JsGrid, wall_documents: Vec<JsWallDocument>) -> Wayfinder {
+        let bounds = Rectangle::from_js(bounds);
+        let grid = Grid::from_js(grid);
+        let walls = Walls::new(bounds, wall_documents);
+
+        Wayfinder { bounds, explored: None, grid, offset: None, walls }
     }
 
-    #[wasm_bindgen(js_name = addBounds)]
-    pub fn add_bounds(&mut self, bounds: JsRectangle) {
-        self.bounds = Some(JsDeserialize::from_value(bounds.into()));
+    #[wasm_bindgen(js_name = addWall)]
+    pub fn add_wall(&mut self, wall_document: JsWallDocument) {
+        self.walls.add_wall(wall_document);
+    }
+
+    #[wasm_bindgen(js_name = deleteWall)]
+    pub fn delete_wall(&mut self, wall_document: JsWallDocument) {
+        self.walls.delete_wall(wall_document);
+    }
+
+    #[wasm_bindgen(js_name = updateWall)]
+    pub fn update_wall(&mut self, wall_document: JsWallDocument) {
+        self.walls.update_wall(wall_document);
     }
 
     #[wasm_bindgen(js_name = addExplored)]
-    pub fn add_explored(&mut self, pixels: Vec<u8>, bounds: JsRectangle, scaled_bounds: JsRectangle) {
-        self.explored = Some(Image::new(
-            bytemuck::allocation::cast_vec(pixels),
-            JsDeserialize::from_value(bounds.into()),
-            JsDeserialize::from_value(scaled_bounds.into()),
-        ));
+    pub fn add_explored(&mut self, gl: WebGl2RenderingContext, texture: JsGLTexture, bounds: JsRectangle) {
+        self.explored = Some(Image::new(gl, GLTexture::from_js(texture), Rectangle::from_js(bounds)));
     }
 
-    #[wasm_bindgen(js_name = addGrid)]
-    pub fn add_grid(&mut self, grid: JsGrid) {
-        self.grid = Some(JsDeserialize::from_value(grid.into()));
-    }
-
-    #[wasm_bindgen(js_name = addToken)]
-    pub fn add_token(&mut self, token: JsToken) {
-        if let Some(grid) = &self.grid {
-            self.token_shape = Some(grid.get_token_shape(token.into()));
+    #[wasm_bindgen(js_name = addOffset)]
+    pub fn add_offset(&mut self, offset: Option<JsPoint>) {
+        match offset {
+            Some(point) => self.offset = Some(Point::from_js(point)),
+            None => self.offset = None,
         }
-    }
-
-    #[wasm_bindgen(js_name = addWalls)]
-    pub fn add_walls(&mut self, wall_documents: Vec<JsWallDocument>) {
-        self.walls = Some(Walls::new(wall_documents));
     }
 
     #[wasm_bindgen(js_name = findPath)]
     pub fn find_path(&mut self, path: Vec<JsPoint>, goal: JsPoint) -> Vec<JsPoint> {
-        let path = JsDeserialize::from_value(path.into());
-        let goal = JsDeserialize::from_value(goal.into());
+        let path = Point::from_js_vector(path);
+        let goal = Point::from_js(goal);
+        let offset = match self.offset {
+            Some(point) => point,
+            None => Point::new(0.0, 0.0),
+        };
 
         let path = match &self.grid {
-            Some(grid) => match grid {
-                Grid::Gridless(gridless_grid) => {
-                    gridless_grid.find_path(path, goal, &self.bounds, &self.walls, &self.explored, &self.token_shape)
-                }
-                Grid::Square(square_grid) => {
-                    square_grid.find_path(path, goal, &self.bounds, &self.walls, &self.explored, &self.token_shape)
-                }
-                Grid::Hexagonal(hexagonal_grid) => {
-                    hexagonal_grid.find_path(path, goal, &self.bounds, &self.walls, &self.explored, &self.token_shape)
-                }
-            },
-            None => Vec::new(),
+            Grid::Gridless(gridless_grid) => {
+                gridless_grid.find_path(path, goal, offset, &self.bounds, &self.walls, &self.explored)
+            }
+            Grid::Square(square_grid) => {
+                square_grid.find_path(path, goal, offset, &self.bounds, &self.walls, &self.explored)
+            }
+            Grid::Hexagonal(hexagonal_grid) => {
+                hexagonal_grid.find_path(path, goal, offset, &self.bounds, &self.walls, &self.explored)
+            }
         };
 
         Wayfinder::simplify_path(path).iter().map(|&p| JsSerialize::to_value(p).into()).collect()

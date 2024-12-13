@@ -1,5 +1,5 @@
 use crate::{
-    exports::{Image, TokenShape, Walls},
+    exports::{Image, Walls},
     types::{Point, Rectangle},
 };
 
@@ -8,9 +8,9 @@ pub trait AStar {
         &self,
         path: Vec<Point>,
         goal: Point,
-        bounds: &Option<Rectangle>,
-        walls: &Option<Walls>,
+        offset: Point,
+        bounds: &Rectangle,
+        walls: &Walls,
         explored: &Option<Image>,
-        token_shape: &Option<TokenShape>,
     ) -> Vec<Point>;
 }

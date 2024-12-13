@@ -1,4 +1,4 @@
-import { ActorPF2e, CombatantPF2e, EncounterPF2e, EncounterTrackerPF2e } from "foundry-pf2e";
+import { ActorPF2e, CombatantPF2e, EncounterPF2e, EncounterTrackerPF2e, RulerPF2e, TokenPF2e } from "foundry-pf2e";
 import init, { Wayfinder } from "wayfinder-crate";
 
 declare global {
@@ -22,7 +22,7 @@ declare global {
         unsetFlag(scope: "wayfinder", key: "movementHistory"): Promise<this>;
     }
 
-    interface Ruler {
+    interface Canvas {
         wayfinder?: Wayfinder;
     }
 }
@@ -42,8 +42,24 @@ function isWayfinderPoint(point: Point | null): point is WayfinderPoint {
     return (point as WayfinderPoint).path !== undefined;
 }
 
-function getPath(history: RulerMeasurementHistoryWaypoint[], waypoints: Point[], destination?: Point | null) {
-    const path = (history as Point[]).concat(waypoints);
+function getPath({
+    history,
+    waypoints,
+    destination,
+}: {
+    history?: RulerMeasurementHistoryWaypoint[];
+    waypoints?: Point[];
+    destination?: Maybe<Point>;
+} = {}) {
+    const path = history
+        ? history.map((p) => {
+              return { x: p.x, y: p.y };
+          })
+        : [];
+
+    if (waypoints) {
+        path.push(...waypoints);
+    }
 
     if (destination) {
         if (isWayfinderPoint(destination)) {
@@ -139,19 +155,28 @@ Hooks.once("ready", () => {
         return;
     }
 
-    libWrapper.register<Ruler, Ruler["_startMeasurement"]>(
+    libWrapper.register<RulerPF2e, RulerPF2e["_startMeasurement"]>(
         "wayfinder",
         "CONFIG.Canvas.rulerClass.prototype._startMeasurement",
-        function (this: Ruler, wrapped: Ruler["_startMeasurement"], origin: Point, { snap = true, token } = {}) {
-            if (this.state !== Ruler.STATES.INACTIVE) return;
+        function (this: RulerPF2e, wrapped: RulerPF2e["_startMeasurement"], origin: Point, { snap = true, token } = {}) {
+            if (!this.isDragMeasuring) {
+                wrapped(origin, { snap, token });
+            }
 
-            if (game.settings.get("wayfinder", "enablePathfinding") && token) {
-                this.wayfinder = new Wayfinder();
+            if (game.settings.get("wayfinder", "enablePathfinding") && token && canvas.wayfinder) {
+                if (Math.max(token.document.width, 1) % 2 !== 1) {
+                    if (canvas.grid.isSquare) {
+                        canvas.wayfinder.addOffset({ x: canvas.grid.size / 2, y: canvas.grid.size / 2 });
+                    }
 
-                this.wayfinder.addGrid(canvas.grid);
-                this.wayfinder.addToken(token);
-                this.wayfinder.addBounds(canvas.scene?.dimensions.sceneRect);
-                this.wayfinder.addWalls(canvas.walls.placeables.map((w) => w.document));
+                    if (canvas.grid.isHexagonal) {
+                        if (canvas.grid.columns) {
+                            canvas.wayfinder.addOffset({ x: canvas.grid.sizeX / 4, y: canvas.grid.sizeY / 2 });
+                        } else {
+                            canvas.wayfinder.addOffset({ x: canvas.grid.sizeX / 2, y: canvas.grid.sizeY / 4 });
+                        }
+                    }
+                }
 
                 if (canvas.scene?.fog.exploration && game.settings.get("wayfinder", "fogExploration")) {
                     if (!game.settings.get("pf2e", "gmVision") && token.document.sight.enabled) {
@@ -168,13 +193,8 @@ Hooks.once("ready", () => {
                         let transform = new PIXI.Matrix(scale, 0, 0, scale, -scaledRect.x, -scaledRect.y);
                         canvas.app.renderer.render(canvas.visibility.explored, { renderTexture, transform });
 
-                        let explored_pixels = canvas.app.renderer.extract.pixels(renderTexture) as Uint8Array;
-
-                        this.wayfinder.addExplored(
-                            explored_pixels,
-                            canvas.dimensions.sceneRect,
-                            new PIXI.Rectangle(0, 0, renderTexture.width, renderTexture.height)
-                        );
+                        // @ts-expect-error
+                        canvas.wayfinder.addExplored(canvas.app.renderer.gl, renderTexture.baseTexture._glTextures[1], sceneRect);
                     }
                 }
             }
@@ -183,27 +203,34 @@ Hooks.once("ready", () => {
         }
     );
 
-    libWrapper.register<Ruler, Ruler["_endMeasurement"]>(
+    libWrapper.register<RulerPF2e, RulerPF2e["_endMeasurement"]>(
         "wayfinder",
         "CONFIG.Canvas.rulerClass.prototype._endMeasurement",
-        function (this: Ruler, wrapped: Ruler["_endMeasurement"]) {
+        function (this: RulerPF2e, wrapped: RulerPF2e["_endMeasurement"]) {
+            if (!this.isDragMeasuring) {
+                return wrapped();
+            }
+
             if (this.state !== Ruler.STATES.MEASURING) return;
 
             wrapped();
-            this.wayfinder?.free();
-            this.wayfinder = undefined;
+            canvas.wayfinder?.addOffset(undefined);
         }
     );
 
-    libWrapper.register<Ruler, Ruler["_getMeasurementDestination"]>(
+    libWrapper.register<RulerPF2e, RulerPF2e["_getMeasurementDestination"]>(
         "wayfinder",
         "CONFIG.Canvas.rulerClass.prototype._getMeasurementDestination",
-        function (this: Ruler, wrapped: Ruler["_getMeasurementDestination"], point: Point, { snap = true } = {}) {
+        function (this: RulerPF2e, wrapped: RulerPF2e["_getMeasurementDestination"], point: Point, { snap = true } = {}) {
+            if (!this.isDragMeasuring) {
+                return wrapped(point, { snap });
+            }
+
             let destination = wrapped(point, { snap });
 
             if (this.user == game.user && snap) {
-                if (this.token && this.wayfinder && game.settings.get("wayfinder", "enablePathfinding")) {
-                    let path = this.wayfinder.findPath(getPath(this.history, this.waypoints), destination);
+                if (this.token && canvas.wayfinder && game.settings.get("wayfinder", "enablePathfinding")) {
+                    let path = canvas.wayfinder.findPath(getPath({ history: this.history, waypoints: this.waypoints }), destination);
                     let mode =
                         Math.max(this.token.document.width, 1) % 2 === 1
                             ? CONST.GRID_SNAPPING_MODES.CENTER
@@ -223,12 +250,16 @@ Hooks.once("ready", () => {
         }
     );
 
-    libWrapper.register<Ruler, Ruler["_getMeasurementSegments"]>(
+    libWrapper.register<RulerPF2e, RulerPF2e["_getMeasurementSegments"]>(
         "wayfinder",
         "CONFIG.Canvas.rulerClass.prototype._getMeasurementSegments",
-        function (this: Ruler, _wrapped: Ruler["_getMeasurementSegments"]) {
+        function (this: RulerPF2e, wrapped: RulerPF2e["_getMeasurementSegments"]) {
+            if (!this.isDragMeasuring) {
+                return wrapped();
+            }
+
             const segments: RulerMeasurementSegment[] = [];
-            const path = getPath(this.history, this.waypoints, this.destination);
+            const path = getPath({ history: this.history, waypoints: this.waypoints, destination: this.destination });
 
             for (let i = 1; i < path.length; i++) {
                 const label =
@@ -278,10 +309,14 @@ Hooks.once("ready", () => {
         }
     );
 
-    libWrapper.register<Ruler, Ruler["_addWaypoint"]>(
+    libWrapper.register<RulerPF2e, RulerPF2e["_addWaypoint"]>(
         "wayfinder",
         "CONFIG.Canvas.rulerClass.prototype._addWaypoint",
-        function (this: Ruler, _wrapped: Ruler["_addWaypoint"], point: Point, { snap = true } = {}) {
+        function (this: RulerPF2e, wrapped: RulerPF2e["_addWaypoint"], point: Point, { snap = true } = {}) {
+            if (!this.isDragMeasuring) {
+                return wrapped(point, { snap });
+            }
+
             if (this.state !== Ruler.STATES.STARTING && this.state !== Ruler.STATES.MEASURING) return;
             const waypoint =
                 this.state === Ruler.STATES.STARTING
@@ -300,22 +335,32 @@ Hooks.once("ready", () => {
         }
     );
 
-    libWrapper.register<Ruler, Ruler["_getMeasurementHistory"]>(
+    libWrapper.register<RulerPF2e, RulerPF2e["_getMeasurementHistory"]>(
         "wayfinder",
         "CONFIG.Canvas.rulerClass.prototype._getMeasurementHistory",
-        function (this: Ruler, _wrapped: Ruler["_getMeasurementHistory"]) {
+        function (this: RulerPF2e, wrapped: RulerPF2e["_getMeasurementHistory"]) {
+            if (!this.isDragMeasuring) {
+                return wrapped();
+            }
+
             if (this.token && game.combat?.started && game.settings.get("wayfinder", "enableMovementHistory")) {
                 if (this.token.inCombat) {
                     return this.token.document.getFlag("wayfinder", "movementHistory")?.history;
                 }
             }
+
+            return undefined;
         }
     );
 
-    libWrapper.register<Ruler, Ruler["_postMove"]>(
+    libWrapper.register<RulerPF2e, RulerPF2e["_postMove"]>(
         "wayfinder",
         "CONFIG.Canvas.rulerClass.prototype._postMove",
-        async function (this: Ruler, _wrapped: Ruler["_postMove"], token: Maybe<Token>) {
+        async function (this: RulerPF2e, wrapped: RulerPF2e["_postMove"], token: TokenPF2e | null) {
+            if (!this.isDragMeasuring) {
+                return wrapped(token);
+            }
+
             if (game.combat?.started && game.settings.get("wayfinder", "enableMovementHistory")) {
                 if (token?.document.inCombat) {
                     token.document.setFlag("wayfinder", "movementHistory", {
@@ -327,10 +372,14 @@ Hooks.once("ready", () => {
         }
     );
 
-    libWrapper.register<Ruler, Ruler["_getSegmentLabel"]>(
+    libWrapper.register<RulerPF2e, RulerPF2e["_getSegmentLabel"]>(
         "wayfinder",
         "CONFIG.Canvas.rulerClass.prototype._getSegmentLabel",
-        function (this: Ruler, _wrapped: Ruler["_getSegmentLabel"], segment: RulerMeasurementSegment) {
+        function (this: RulerPF2e, wrapped: RulerPF2e["_getSegmentLabel"], segment: RulerMeasurementSegment) {
+            if (!this.isDragMeasuring) {
+                return wrapped(segment);
+            }
+
             if (segment.teleport) return "";
             const units = canvas.grid.units;
             let label = !game.settings.get("wayfinder", "enableDifficultTerrain")
@@ -368,6 +417,27 @@ Hooks.once("ready", () => {
             }
 
             return label;
+        }
+    );
+
+    libWrapper.register<RulerPF2e, RulerPF2e["_getMeasurementData"]>(
+        "wayfinder",
+        "CONFIG.Canvas.rulerClass.prototype._getMeasurementData",
+        function (this: RulerPF2e, wrapped: RulerPF2e["_getMeasurementData"]) {
+            if (!this.isDragMeasuring) {
+                return wrapped();
+            }
+
+            let destinationPath = getPath({ destination: this.destination });
+            let destination = destinationPath.pop() ?? null;
+
+            return foundry.utils.deepClone({
+                state: this.state,
+                token: this.token?.id ?? null,
+                history: this.history,
+                waypoints: [...this.waypoints, ...destinationPath],
+                destination: destination,
+            });
         }
     );
 });
@@ -414,5 +484,41 @@ Hooks.on("getCombatTrackerEntryContext", (_application: EncounterTrackerPF2e<Enc
                 if (combatant) combatant.token?.unsetFlag("wayfinder", "movementHistory");
             },
         });
+    }
+});
+
+Hooks.on("canvasReady", (canvas: Canvas) => {
+    if (canvas.scene) {
+        canvas.wayfinder = new Wayfinder(
+            canvas.scene.dimensions.sceneRect,
+            canvas.grid,
+            canvas.walls.placeables.map((w) => w.document)
+        );
+    }
+});
+
+Hooks.on("canvasTearDown", (canvas: Canvas) => {
+    canvas.wayfinder?.free();
+    canvas.wayfinder = undefined;
+});
+
+Hooks.on("createWall", (document: WallDocument<Scene>, _options: DatabaseCreateOperation<WallDocument<Scene>>, _userId: string) => {
+    if (document.parent == game.scenes.current) {
+        canvas.wayfinder?.addWall(document);
+    }
+});
+
+Hooks.on(
+    "updateWall",
+    (document: WallDocument<Scene>, _change: object, _options: DatabaseUpdateOperation<WallDocument<Scene>>, _userId: string) => {
+        if (document.parent == game.scenes.current) {
+            canvas.wayfinder?.updateWall(document);
+        }
+    }
+);
+
+Hooks.on("deleteWall", (document: WallDocument<Scene>, _options: DatabaseDeleteOperation<WallDocument<Scene>>, _userId: string) => {
+    if (document.parent == game.scenes.current) {
+        canvas.wayfinder?.deleteWall(document);
     }
 });

@@ -13,10 +13,16 @@ strip = "debuginfo"
 crate-type = ["cdylib"]
 
 [dependencies]
-bytemuck = { version = "1.19.0", features = ["derive", "extern_crate_alloc"] }
+bimap = "0.6.3"
+by_address = "1.2.1"
+bytemuck = { version = "1.20.0", features = ["derive", "extern_crate_alloc"] }
 console_error_panic_hook = "0.1.7"
-js-sys = "0.3.72"
-pathfinding = "4.11.0"
-rapier2d = "0.22.0"
-wasm-bindgen = { version = "0.2.95" }
-web-sys = { version = "0.3.72", features = ["console"] }
+js-sys = "0.3.76"
+pathfinding = "4.12.0"
+wasm-bindgen = { version = "0.2.97" }
+web-sys = { version = "0.3.76", features = [
+    "console",
+    "WebGlTexture",
+    "WebGl2RenderingContext",
+    "WebGlFramebuffer",
+] }

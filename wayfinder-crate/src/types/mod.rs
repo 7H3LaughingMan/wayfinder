@@ -1,9 +1,22 @@
+mod circle;
+mod gl_texture;
+mod line_intersection;
 mod pixel;
 mod point;
+mod quadtree;
+mod ray;
 mod rectangle;
 mod wall;
 
+pub use self::circle::Circle;
+pub use self::gl_texture::GLTexture;
+pub use self::line_intersection::LineIntersection;
 pub use self::pixel::Pixel;
 pub use self::point::Point;
+pub use self::quadtree::CollisionCheck;
+pub use self::quadtree::QuadPointer;
+pub use self::quadtree::Quadtree;
+pub use self::quadtree::QuadtreeObject;
+pub use self::ray::Ray;
 pub use self::rectangle::Rectangle;
 pub use self::wall::Wall;

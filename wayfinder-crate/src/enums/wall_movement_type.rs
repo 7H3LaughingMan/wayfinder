@@ -7,8 +7,8 @@ pub enum WallMovementType {
 }
 
 impl crate::traits::JsDeserialize for WallMovementType {
-    fn from_value(value: wasm_bindgen::JsValue) -> Self {
-        let value = i32::from_value(value);
+    fn from_js(data: impl wasm_bindgen::JsCast) -> Self {
+        let value = i32::from_js(data);
 
         match value {
             0 => WallMovementType::None,

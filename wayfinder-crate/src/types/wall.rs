@@ -1,14 +1,16 @@
-use wasm_bindgen::JsValue;
-
 use crate::{
     enums::{WallDirection, WallDoorState, WallDoorType, WallMovementType, WallSenseType},
     traits::{JsDeserialize, JsHelper},
+    types::Point,
 };
 
-#[derive(Clone, Copy)]
+use super::Rectangle;
+
+#[derive(Clone)]
 #[derive(Debug)]
 pub struct Wall {
-    pub c: [f32; 4],
+    pub id: String,
+    pub c: [f64; 4],
     pub light: WallSenseType,
     pub r#move: WallMovementType,
     pub sight: WallSenseType,
@@ -30,40 +32,35 @@ impl Wall {
 
         false
     }
-}
 
-impl JsDeserialize for Wall {
-    fn from_value(value: JsValue) -> Self {
-        let c: Vec<f32> = {
-            let value = value.get("c");
-            let mut vector = Vec::new();
-            let iterator = js_sys::try_iter(&value).unwrap().unwrap();
+    pub fn get_a(&self) -> Point {
+        Point::new(self.c[0], self.c[1])
+    }
 
-            for x in iterator {
-                vector.push(JsDeserialize::from_value(x.unwrap()));
-            }
+    pub fn get_b(&self) -> Point {
+        Point::new(self.c[2], self.c[3])
+    }
 
-            vector
-        };
+    pub fn get_bounds(&self) -> Rectangle {
+        let Point { x: x0, y: y0 } = self.get_a();
+        let Point { x: x1, y: y1 } = self.get_b();
 
-        Wall {
-            c: [c[0], c[1], c[2], c[3]],
-            light: JsDeserialize::from_value(value.get("light")),
-            r#move: JsDeserialize::from_value(value.get("move")),
-            sight: JsDeserialize::from_value(value.get("sight")),
-            sound: JsDeserialize::from_value(value.get("sound")),
-            dir: JsDeserialize::from_value(value.get("dir")),
-            door: JsDeserialize::from_value(value.get("door")),
-            ds: JsDeserialize::from_value(value.get("ds")),
-        }
+        return Rectangle::new(x0, y0, x1 - x0, y1 - y0).normalize();
     }
 }
 
-impl From<Wall> for rapier2d::prelude::Collider {
-    fn from(value: Wall) -> Self {
-        let a = rapier2d::na::Point2::new(value.c[0], value.c[1]);
-        let b = rapier2d::na::Point2::new(value.c[2], value.c[3]);
-
-        rapier2d::prelude::ColliderBuilder::polyline(vec![a, b], None).build()
+impl JsDeserialize for Wall {
+    fn from_js(data: impl wasm_bindgen::JsCast) -> Self {
+        Wall {
+            id: data.get_value("_id"),
+            c: data.get_value("c"),
+            light: data.get_value("light"),
+            r#move: data.get_value("move"),
+            sight: data.get_value("sight"),
+            sound: data.get_value("sound"),
+            dir: data.get_value("dir"),
+            door: data.get_value("door"),
+            ds: data.get_value("ds"),
+        }
     }
 }
