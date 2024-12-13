@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [6.8.1] - 2024-12-13
 
+### Fixed
+
+- Fixed a problem where Sequencer appears to be changing PixiJS GLTexture Index
+
 ## [6.8.0] - 2024-12-13
 
 ### Added
