@@ -193,8 +193,12 @@ Hooks.once("ready", () => {
                         let transform = new PIXI.Matrix(scale, 0, 0, scale, -scaledRect.x, -scaledRect.y);
                         canvas.app.renderer.render(canvas.visibility.explored, { renderTexture, transform });
 
-                        // @ts-expect-error
-                        canvas.wayfinder.addExplored(canvas.app.renderer.gl, renderTexture.baseTexture._glTextures[1], sceneRect);
+                        canvas.wayfinder.addExplored(
+                            // @ts-expect-error
+                            canvas.app.renderer.gl,
+                            Object.values(renderTexture.baseTexture._glTextures)[0],
+                            sceneRect
+                        );
                     }
                 }
             }

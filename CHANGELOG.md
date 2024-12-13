@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [6.8.1] - 2024-12-13
+
 ## [6.8.0] - 2024-12-13
 
 ### Added
@@ -80,7 +82,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Fixed a problem with checking fog exploration where it was slightly off when checking pixels
 - Improved Fog Exploration
 
-[Unreleased]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.8.0...HEAD
+[Unreleased]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.8.1...HEAD
+[6.8.1]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.8.0...v6.8.1
 [6.8.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.7.2...v6.8.0
 [6.7.2]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.7.1...v6.7.2
 [6.7.1]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.7.0...v6.7.1
