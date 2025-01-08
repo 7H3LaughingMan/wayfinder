@@ -1,0 +1,26 @@
+{
+    "wayfinder": {
+        "clearMovementHistory": "Limpar Histórico de Movimento",
+        "controls": {
+            "pathfinding": "Determinação de Rotas"
+        },
+        "settings": {
+            "enableActionIcons": {
+                "name": "Ícones de Ação",
+                "hint": "Quando habilitado, exibirá o número de ações que uma ação de movimentação necessita para ser realizada."
+            },
+            "enableDifficultTerrain": {
+                "name": "Terreno Difícil",
+                "hint": "Quando habilitado, exibirá custos adicionais de movimentação para atravessar uma área com terreno difícil."
+            },
+            "enableMovementHistory": {
+                "name": "Histórico de Movimento",
+                "hint": "Quando habilitado irá registrar a movimentação de um token durante o combate e redefinir após o começo de um novo turno do token."
+            },
+            "fogExploration": {
+                "name": "Restrição para Névoa de Guerra",
+                "hint": "Ao habilitar esta opção a determinação de rotas será limitada apenas a partes do mapa que já foram exploradas."
+            }
+        }
+    }
+}
