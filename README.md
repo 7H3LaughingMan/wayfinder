@@ -5,4 +5,4 @@
 
 A wayfinder for your everyday needs! It let's you navigate treacherous paths and plan the shortest route to your destination.
 
-![Wayfinder Example](https://raw.githubusercontent.com/7H3LaughingMan/assets/main/wayfinder/example.webp)
+![Wayfinder Example](https://github.com/7H3LaughingMan/wayfinder/raw/refs/heads/main/toolclips/pathfinding.webp)

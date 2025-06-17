@@ -1,21 +1,13 @@
+use std::collections::HashMap;
+
+use wasm_bindgen::prelude::wasm_bindgen;
+
 use crate::{
-    enums::{Grid, TokenShapeType},
+    enums::Grid,
     exports::Walls,
-    grids::{gridless_grid, HexagonalGrid},
-    log,
-    modules::geometry,
-    nodes::{HexagonalNode, SquareNode},
-    traits::{
-        js_deserialize::JsDeserializeOption, AStar, BaseGrid, JsDeserialize, JsDeserializeVector, JsSerialize, Node,
-    },
-    types::{
-        GridMeasurePathResult, GridOffset2D, GridOffset3D, HexagonalGridCube3D, Point, Rectangle, TokenDocument,
-        TokenFindMovementPathWaypoint, TokenMovementWaypoint,
-    },
+    traits::{js_deserialize::JsDeserializeOption, AStar, JsDeserialize, JsDeserializeVector, JsSerialize},
+    types::{GridMeasurePathResult, Rectangle, TokenDocument, TokenFindMovementPathWaypoint, TokenMovementWaypoint},
 };
-use std::{collections::HashMap, time::Duration};
-use wasm_bindgen::prelude::*;
-use web_sys::WebGl2RenderingContext;
 
 #[wasm_bindgen(typescript_custom_section)]
 const TYPESCRIPT_CUSTOM_SECTION: &'static str = r#"
