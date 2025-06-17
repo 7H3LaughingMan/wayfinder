@@ -2,11 +2,11 @@
     "id": "wayfinder",
     "title": "Wayfinder",
     "description": "A wayfinder for your everyday needs! It let's you navigate treacherous paths and plan the shortest route to your destination.",
-    "version": "6.8.0",
+    "version": "7.0.0",
     "compatibility": {
-        "minimum": "12.331",
-        "verified": "12.331",
-        "maximum": "12"
+        "minimum": "13",
+        "verified": "13",
+        "maximum": "13"
     },
     "authors": [
         {
@@ -21,31 +21,6 @@
             "lang": "en",
             "name": "English",
             "path": "languages/en.json"
-        },
-        {
-            "lang": "pl",
-            "name": "Polish",
-            "path": "languages/pl.json"
-        }
-    ],
-    "packs": [
-        {
-            "name": "wayfinder-macros",
-            "label": "Wayfinder Macros",
-            "path": "packs/wayfinder-macros",
-            "type": "Macro",
-            "ownership": {
-                "PLAYER": "OBSERVER",
-                "ASSISTANT": "OWNER"
-            }
-        }
-    ],
-    "packFolders": [
-        {
-            "name": "Macros",
-            "sorting": "m",
-            "color": "#181818",
-            "packs": ["wayfinder-macros"]
         }
     ],
     "relationships": {
@@ -53,40 +28,14 @@
             {
                 "id": "pf2e",
                 "type": "system",
-                "manifest": "https://github.com/foundryvtt/pf2e/releases/latest/download/system.json",
-                "compatibility": {
-                    "minimum": "6.7.2"
-                }
+                "manifest": "https://github.com/foundryvtt/pf2e/releases/latest/download/system.json"
             }
         ],
         "requires": [
             {
                 "id": "lib-wrapper",
                 "type": "module",
-                "manifest": "https://github.com/ruipin/fvtt-lib-wrapper/releases/latest/download/module.json",
-                "compatibility": {
-                    "minimum": "1.13.2.0"
-                }
-            }
-        ],
-        "conflicts": [
-            {
-                "id": "drag-ruler",
-                "type": "module",
-                "compatibility": {},
-                "reason": "PF2e System Ruler Conflict"
-            },
-            {
-                "id": "elevationruler",
-                "type": "module",
-                "compatibility": {},
-                "reason": "PF2e System Ruler Conflict"
-            },
-            {
-                "id": "pf2e-ruler",
-                "type": "module",
-                "compatibility": {},
-                "reason": "PF2e System Ruler Conflict"
+                "manifest": "https://github.com/ruipin/fvtt-lib-wrapper/releases/latest/download/module.json"
             }
         ]
     },

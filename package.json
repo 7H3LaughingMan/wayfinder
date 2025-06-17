@@ -1,27 +1,27 @@
 {
     "name": "wayfinder",
     "scripts": {
-        "build": "npm run build:packs && npm run build:wasm && npm run build:vite",
-        "build:packs": "tsx ./build-packs.ts",
+        "build": "npm run build:wasm && npm run build:vite",
         "build:vite": "vite build",
-        "build:wasm": "wasm-pack build ./wayfinder-crate --target web --out-name wayfinder --release",
+        "build:wasm": "wasm-pack build --target web --release",
         "changelog": "changelog --format markdownlint --create --release",
-        "fvtt": "fvtt launch"
+        "link": "tsx ./build/link-foundry.ts",
+        "launch": "tsx ./build/launch-foundry.ts"
     },
     "author": "7H3LaughingMan",
     "license": "MIT",
     "type": "module",
     "devDependencies": {
-        "@types/node": "^22.7.6",
-        "foundryvtt-cli": "github:7H3LaughingMan/foundryvtt-cli",
-        "keep-a-changelog": "^2.5.3",
-        "prettier": "^3.3.3",
-        "tsx": "^4.19.1",
-        "typescript": "^5.3.3",
-        "vite": "^5.4.9"
+        "@types/node": "24.0.3",
+        "@types/prompts": "^2.4.9",
+        "keep-a-changelog": "2.6.2",
+        "prettier": "3.5.3",
+        "prompts": "^2.4.2",
+        "tsx": "4.20.3",
+        "typescript": "5.8.3",
+        "vite": "6.3.5"
     },
     "dependencies": {
-        "foundry-pf2e": "github:7H3LaughingMan/foundry-pf2e",
-        "wayfinder-crate": "file:wayfinder-crate/pkg"
+        "foundry-pf2e": "github:7H3LaughingMan/foundry-pf2e"
     }
 }

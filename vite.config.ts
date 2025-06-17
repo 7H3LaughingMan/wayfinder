@@ -1,10 +1,10 @@
 import { defineConfig } from "vite";
-import module from "./module.json";
+import module from "./module.json" with { type: "json" };
 
 export default defineConfig({
     build: {
         lib: {
-            entry: "src/index.ts",
+            entry: "ts/index.ts",
             formats: ["es"],
             fileName: module.id,
         },

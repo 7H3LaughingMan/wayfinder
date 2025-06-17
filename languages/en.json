@@ -1,25 +1,15 @@
 {
     "wayfinder": {
-        "clearMovementHistory": "Clear Movement History",
         "controls": {
-            "pathfinding": "Pathfinding"
+            "pathfinding": {
+                "title": "Pathfinding",
+                "paragraph": "When active, Wayfinder will attempt to find the shortest path when dragging a Token."
+            }
         },
         "settings": {
-            "enableActionIcons": {
-                "name": "Action Icons",
-                "hint": "When enabled the number of actions it would take to move a token will be displayed."
-            },
-            "enableDifficultTerrain": {
-                "name": "Difficult Terrain",
-                "hint": "When enabled the additional cost of moving through difficult terrain will be displayed."
-            },
-            "enableMovementHistory": {
-                "name": "Movement History",
-                "hint": "When enabled it will track a token's movement during combat and reset at the start of the token's turn."
-            },
             "fogExploration": {
                 "name": "Fog Exploration Restriction",
-                "hint": "When enabled pathfinding will be limited to only parts of the map that have been explored."
+                "hint": "When enabled Wayfinder will be limited to only parts of the map that have been explored."
             }
         }
     }
