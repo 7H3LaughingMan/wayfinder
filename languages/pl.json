@@ -1,0 +1,16 @@
+{
+    "wayfinder": {
+        "controls": {
+            "pathfinding": {
+                "title": "Wyszukiwanie ścieżek",
+                "paragraph": "Gdy opcja jest aktywna, Wayfinder będzie próbował znaleźć najkrótszą ścieżkę podczas przeciągania tokenu."
+            }
+        },
+        "settings": {
+            "fogExploration": {
+                "name": "Ograniczenie eksploracji we mgle",
+                "hint": "Kiedy ta opcja jest włączona, Wayfinder będzie ograniczony tylko do tych części mapy, które zostały już zbadane."
+            }
+        }
+    }
+}
