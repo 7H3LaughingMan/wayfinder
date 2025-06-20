@@ -1,16 +1,11 @@
-use std::{collections::HashMap, ops::RangeInclusive};
-
 use crate::{
     enums::TokenShapeType,
-    exports::Walls,
+    exports::{Fog, Walls},
     nodes::GridlessNode,
-    traits::{AStar, BaseGrid, JsDeserialize, JsHelper},
-    types::{
-        self, ElevatedPoint, GridMeasurePathResult, GridOffset2D, GridOffset3D, Point, Rectangle, TokenDocument,
-        TokenMovementWaypoint, TokenSquareShapeData,
-    },
+    traits::{AStar, BaseGrid},
+    types::{ElevatedPoint, GridOffset3D, Point, Rectangle, TokenSquareShapeData},
 };
-use wasm_bindgen::JsValue;
+use std::ops::RangeInclusive;
 
 #[derive(Debug)]
 pub struct GridlessGrid {
@@ -34,7 +29,7 @@ impl BaseGrid<GridlessNode, TokenSquareShapeData> for GridlessGrid {
         _elevation_range: &RangeInclusive<i32>,
         _bounds: &Rectangle,
         _walls: &Walls,
-        _explored: &Option<HashMap<GridOffset2D, bool>>,
+        _fog: &Option<Fog>,
     ) -> Vec<(GridlessNode, u32)> {
         Vec::new()
     }
@@ -113,18 +108,10 @@ impl BaseGrid<GridlessNode, TokenSquareShapeData> for GridlessGrid {
             height,
         }
     }
-}
 
-impl AStar for GridlessGrid {
-    fn find_path(
-        &self,
-        _waypoints: Vec<TokenMovementWaypoint>,
-        _token: &TokenDocument,
-        _bounds: &Rectangle,
-        _walls: &Walls,
-        _explored: &Option<HashMap<GridOffset2D, bool>>,
-        _grid_measure_path_result: &GridMeasurePathResult,
-    ) -> Vec<TokenMovementWaypoint> {
+    fn simplify_path(&self, _path: Vec<GridlessNode>) -> Vec<GridlessNode> {
         Vec::new()
     }
 }
+
+impl AStar<GridlessNode, TokenSquareShapeData> for GridlessGrid {}

@@ -1,4 +1,4 @@
-use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsValue;
 
 pub trait JsSerialize
 where Self: Sized

@@ -42,6 +42,10 @@ impl Node for HexagonalNode {
         n + ((d + if self.d { 1 } else { 0 }) / 2)
     }
 
+    fn get_elevation(&self) -> i32 {
+        self.k
+    }
+
     fn get_neighbors(&self) -> Vec<(Self, u32)> {
         let HexagonalNode { q, r, s, k, d } = *self;
 
@@ -67,5 +71,9 @@ impl Node for HexagonalNode {
             (HexagonalNode::new(q + 1, r, s - 1, k, d), 1),
             (HexagonalNode::new(q + 1, r, s - 1, k + 1, !d), if d { 2 } else { 1 }),
         ]
+    }
+
+    fn set_diagonal(&mut self, diagonal: bool) {
+        self.d = diagonal
     }
 }

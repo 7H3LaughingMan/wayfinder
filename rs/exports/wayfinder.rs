@@ -1,18 +1,20 @@
-use std::collections::HashMap;
-
-use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::prelude::*;
+use web_sys::WebGl2RenderingContext;
 
 use crate::{
     enums::Grid,
-    exports::Walls,
-    traits::{js_deserialize::JsDeserializeOption, AStar, JsDeserialize, JsDeserializeVector, JsSerialize},
-    types::{GridMeasurePathResult, Rectangle, TokenDocument, TokenFindMovementPathWaypoint, TokenMovementWaypoint},
+    exports::{Fog, Walls},
+    traits::{AStar, JsDeserialize, JsDeserializeVector, JsSerialize},
+    types::{
+        GLTexture, GridMeasurePathResult, Point, Rectangle, TokenDocument, TokenFindMovementPathWaypoint,
+        TokenMovementWaypoint,
+    },
 };
 
 #[wasm_bindgen(typescript_custom_section)]
 const TYPESCRIPT_CUSTOM_SECTION: &'static str = r#"
 import { TokenFindMovementPathWaypoint, TokenMovementWaypoint } from "foundry-pf2e/foundry/client/_types.mjs";
-import { Rectangle } from "foundry-pf2e/foundry/common/_types.mjs";
+import { Point, Rectangle } from "foundry-pf2e/foundry/common/_types.mjs";
 import { GridOffset2D } from "foundry-pf2e/foundry/common/grid/_types.mjs";"#;
 
 #[wasm_bindgen]
@@ -32,8 +34,12 @@ extern "C" {
     pub type JsGridOffset2D;
 
     #[derive(Debug)]
-    #[wasm_bindgen(typescript_type = "Map<GridOffset2D, boolean>")]
-    pub type JsExploredMap;
+    #[wasm_bindgen(typescript_type = "PIXI.GLTexture")]
+    pub type JsGLTexture;
+
+    #[derive(Debug)]
+    #[wasm_bindgen(typescript_type = "Point")]
+    pub type JsPoint;
 
     #[derive(Debug)]
     #[wasm_bindgen(typescript_type = "Rectangle")]
@@ -59,6 +65,7 @@ extern "C" {
 #[wasm_bindgen]
 pub struct Wayfinder {
     bounds: Rectangle,
+    fog: Option<Fog>,
     grid: Grid,
     walls: Walls,
 }
@@ -71,7 +78,26 @@ impl Wayfinder {
         let grid = Grid::from_js(grid);
         let walls = Walls::new(bounds, wall_documents);
 
-        Wayfinder { bounds, grid, walls }
+        Wayfinder { bounds, fog: None, grid, walls }
+    }
+
+    #[wasm_bindgen(js_name = updateFog)]
+    pub fn update_fog(
+        &mut self,
+        gl: WebGl2RenderingContext,
+        gl_texture: JsGLTexture,
+        bounds: JsRectangle,
+        resolution: f64,
+    ) {
+        self.fog = Some(Fog::new(gl, GLTexture::from_js(gl_texture), Rectangle::from_js(bounds), resolution))
+    }
+
+    #[wasm_bindgen(js_name = isPointExplored)]
+    pub fn is_point_explored(&mut self, point: JsPoint) -> bool {
+        match &self.fog {
+            Some(fog) => fog.is_point_explored(Point::from_js(point)),
+            None => false,
+        }
     }
 
     #[wasm_bindgen(js_name = addWall)]
@@ -94,12 +120,11 @@ impl Wayfinder {
         &mut self,
         token: JsTokenDocument,
         waypoints: Vec<JsTokenFindMovementPathWaypoint>,
-        explored: Option<JsExploredMap>,
+        use_exploration: bool,
         grid_measure_path_result: JsGridMeasurePathResult,
     ) -> Vec<JsTokenMovementWaypoint> {
         let token = TokenDocument::from_js(token);
         let waypoints = TokenFindMovementPathWaypoint::from_js_vector(waypoints);
-        let explored = HashMap::from_js_option(explored);
         let grid_measure_path_result = GridMeasurePathResult::from_js(grid_measure_path_result);
 
         let mut new_waypoints = Vec::<TokenMovementWaypoint>::new();
@@ -115,7 +140,7 @@ impl Wayfinder {
                 &token,
                 &self.bounds,
                 &self.walls,
-                &explored,
+                if use_exploration { &self.fog } else { &None },
                 &grid_measure_path_result,
             ),
             Grid::Square(square_grid) => square_grid.find_path(
@@ -123,7 +148,7 @@ impl Wayfinder {
                 &token,
                 &self.bounds,
                 &self.walls,
-                &explored,
+                if use_exploration { &self.fog } else { &None },
                 &grid_measure_path_result,
             ),
             Grid::Hexagonal(hexagonal_grid) => hexagonal_grid.find_path(
@@ -131,7 +156,7 @@ impl Wayfinder {
                 &token,
                 &self.bounds,
                 &self.walls,
-                &explored,
+                if use_exploration { &self.fog } else { &None },
                 &grid_measure_path_result,
             ),
         };

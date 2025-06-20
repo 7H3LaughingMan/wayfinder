@@ -6,5 +6,7 @@ where Self: Clone + Copy + Debug + Hash + Sized
 {
     fn at_node(&self, other: &Self) -> bool;
     fn get_distance(&self, other: &Self) -> u32;
+    fn get_elevation(&self) -> i32;
     fn get_neighbors(&self) -> Vec<(Self, u32)>;
+    fn set_diagonal(&mut self, diagonal: bool);
 }

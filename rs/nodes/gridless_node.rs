@@ -22,19 +22,23 @@ impl GridlessNode {
 }
 
 impl Node for GridlessNode {
-    fn at_node(&self, other: &Self) -> bool {
-        let _ = other;
-
+    fn at_node(&self, _other: &Self) -> bool {
         false
     }
 
-    fn get_distance(&self, other: &Self) -> u32 {
-        let _ = other;
-
+    fn get_distance(&self, _other: &Self) -> u32 {
         0
+    }
+
+    fn get_elevation(&self) -> i32 {
+        self.k
     }
 
     fn get_neighbors(&self) -> Vec<(Self, u32)> {
         Vec::new()
+    }
+
+    fn set_diagonal(&mut self, _diagonal: bool) {
+        todo!()
     }
 }

@@ -1,7 +1,6 @@
 use crate::{
     enums::Grid,
     exports::JsWallDocument,
-    log,
     modules::geometry,
     traits::{JsDeserialize, JsDeserializeVector, JsHelper},
     types::{ElevatedPoint, GridOffset3D, Point, QuadPointer, Quadtree, QuadtreeObject, Ray, Rectangle, Wall},

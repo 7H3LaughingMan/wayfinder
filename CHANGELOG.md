@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [7.1.0] - 2025-06-20
+
+### Changed
+
+- Reworked Fog Exploration
+  - Due to a [bug](https://github.com/foundryvtt/foundryvtt/issues/13046) with `FogManager` the way Wayfinder handles fog exploration needed to be reworked.
+  - It will now generate a texture that represents the explored area and use that to calculate if a spot has been "explored". This is similar to how it used to work but instead of extracting all four channels (red, green, blue, and alpha) it only extracts the red channel. It is also done less often now, it used to be done every time Wayfinder was trying to find a path and now it's only done when the canvas is ready or when the explored area has changed.
+
+### Fixed
+
+- Wayfinder now respects if you have pathfinding disabledW
+
 ## [7.0.0] - 2025-06-17
 
 Foundry Virtual Tabletop - Version 13 Support!
@@ -95,7 +107,7 @@ Foundry Virtual Tabletop - Version 13 Support!
 ### Changed
 
 - Pathfinding toggle is now a compass
-- When adding a waypoint the entrie found path will be added as multiple waypoints
+- When adding a waypoint the entire found path will be added as multiple waypoints
 
 ### Fixed
 
@@ -103,7 +115,8 @@ Foundry Virtual Tabletop - Version 13 Support!
 - Fixed a problem with checking fog exploration where it was slightly off when checking pixels
 - Improved Fog Exploration
 
-[Unreleased]: https://github.com/7H3LaughingMan/wayfinder/compare/v7.0.0...HEAD
+[Unreleased]: https://github.com/7H3LaughingMan/wayfinder/compare/v7.1.0...HEAD
+[7.1.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v7.0.0...v7.1.0
 [7.0.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.8.1...v7.0.0
 [6.8.1]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.8.0...v6.8.1
 [6.8.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.7.2...v6.8.0

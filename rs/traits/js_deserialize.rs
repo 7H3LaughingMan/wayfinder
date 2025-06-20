@@ -1,10 +1,5 @@
-use std::{
-    collections::{btree_map::Entry, HashMap},
-    convert::TryInto,
-    fmt::Debug,
-    hash::Hash,
-};
-use wasm_bindgen::{JsCast, JsValue};
+use std::fmt::Debug;
+use wasm_bindgen::JsCast;
 
 pub trait JsDeserialize {
     fn from_js(data: impl JsCast) -> Self;
@@ -35,17 +30,6 @@ impl<T: JsDeserialize + Debug> JsDeserializeOption for T {
         } else {
             None
         }
-    }
-}
-
-impl<K: JsDeserialize + Debug + Eq + Hash, V: JsDeserialize + Debug> JsDeserialize for HashMap<K, V> {
-    fn from_js(data: impl JsCast) -> Self {
-        let mut map = HashMap::<K, V>::new();
-        let js_map = js_sys::Map::unchecked_from_js_ref(data.as_ref());
-        js_map.for_each(&mut |value, key| {
-            map.insert(JsDeserialize::from_js(key), JsDeserialize::from_js(value));
-        });
-        map
     }
 }
 

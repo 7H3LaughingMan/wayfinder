@@ -22,4 +22,9 @@ js-sys = "0.3.77"
 pathfinding = "4.14.0"
 wasm-bindgen = { version = "0.2.100" }
 wasm-bindgen-futures = "0.4.50"
-web-sys = { version = "0.3.76", features = ["console"] }
+web-sys = { version = "0.3.76", features = [
+    "console",
+    "WebGlTexture",
+    "WebGl2RenderingContext",
+    "WebGlFramebuffer",
+] }

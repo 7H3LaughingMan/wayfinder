@@ -1,3 +1,4 @@
+mod gl_texture;
 mod grid_measure_path_result;
 mod grid_offset;
 mod hexagonal_grid_cube;
@@ -12,6 +13,7 @@ mod token_movement_waypoint;
 mod token_shape_data;
 mod wall;
 
+pub use self::gl_texture::GLTexture;
 pub use self::grid_measure_path_result::GridMeasurePathResult;
 pub use self::grid_offset::GridOffset2D;
 pub use self::grid_offset::GridOffset3D;

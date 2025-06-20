@@ -1,6 +1,6 @@
+use wasm_bindgen::{JsCast, JsValue};
+
 use crate::traits::JsDeserialize;
-use std::thread::LocalKey;
-use wasm_bindgen::prelude::*;
 
 pub trait JsHelper {
     fn get(&self, key: &str) -> JsValue;

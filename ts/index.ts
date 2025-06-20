@@ -13,6 +13,9 @@ import {
 } from "foundry-pf2e/foundry/common/abstract/_module.mjs";
 import init, { Wayfinder } from "../pkg/wayfinder.js";
 import { GridOffset2D } from "foundry-pf2e/foundry/common/grid/_types.mjs";
+import FogManager from "foundry-pf2e/foundry/client/canvas/perception/fog.mjs";
+import { Point } from "foundry-pf2e/foundry/common/_types.mjs";
+import CanvasVisibility from "foundry-pf2e/foundry/client/canvas/groups/visibility.mjs";
 
 declare module "foundry-pf2e" {
     interface ClientSettingsPF2e {
@@ -29,6 +32,8 @@ declare module "foundry-pf2e/foundry/client/canvas/_module.mjs" {
         wayfinder?: Wayfinder;
     }
 }
+
+CONFIG.debug.fog.manager = true;
 
 Hooks.once("init", async () => {
     game.settings.register("wayfinder", "enablePathfinding", {
@@ -51,29 +56,38 @@ Hooks.once("init", async () => {
     await init();
 });
 
-function getExploration(token: TokenPF2e): Map<GridOffset2D, boolean> | undefined {
-    if (game.user.isGM && !token.document.sight.enabled) {
+function updateExploration() {
+    if (!canvas.wayfinder) {
         return;
     }
 
-    if (game.user.isGM && game.settings.get("pf2e", "gmVision")) {
+    if (!canvas.fog.tokenVision || !canvas.fog.fogExploration) {
         return;
     }
 
-    if (game.settings.get("wayfinder", "fogExploration")) {
-        if (canvas.scene?.tokenVision && canvas.scene?.fog.exploration) {
-            const exploration = new Map<GridOffset2D, boolean>();
-            const offsetRange = canvas.grid.getOffsetRange(canvas.dimensions.rect);
+    let textureConfiguration = canvas.fog.textureConfiguration;
+    let sprite = canvas.fog.sprite;
 
-            for (let i = offsetRange[0]; i < offsetRange[2]; i++) {
-                for (let j = offsetRange[1]; j < offsetRange[3]; j++) {
-                    exploration.set({ i, j }, canvas.fog.isPointExplored(canvas.grid.getCenterPoint({ i, j })));
-                }
-            }
+    let renderTexture = PIXI.RenderTexture.create({
+        width: sprite.width * textureConfiguration.resolution,
+        height: sprite.height * textureConfiguration.resolution,
+    });
+    let transform = new PIXI.Matrix(
+        textureConfiguration.resolution,
+        0,
+        0,
+        textureConfiguration.resolution,
+        -(sprite.x * textureConfiguration.resolution),
+        -(sprite.y * textureConfiguration.resolution)
+    );
+    canvas.app.renderer.render(sprite, { renderTexture, transform });
 
-            return exploration;
-        }
-    }
+    canvas.wayfinder.updateFog(
+        (canvas.app.renderer as PIXI.Renderer).gl,
+        renderTexture.baseTexture._glTextures[(canvas.app.renderer as PIXI.Renderer).CONTEXT_UID],
+        canvas.dimensions.sceneRect,
+        textureConfiguration.resolution
+    );
 }
 
 Hooks.once("ready", () => {
@@ -86,30 +100,39 @@ Hooks.once("ready", () => {
             waypoints: TokenFindMovementPathWaypoint[],
             options: TokenFindMovementPathOptions
         ) {
-            if (canvas.wayfinder && !canvas.grid.isGridless && !options.ignoreWalls && !options.ignoreCost) {
-                let movementHistory: TokenMeasuredMovementWaypoint[] = Array.isArray(options.history)
-                    ? options.history
-                    : options.history
-                      ? this.document.movementHistory
-                      : [];
+            if (game.settings.get("wayfinder", "enablePathfinding")) {
+                if (canvas.wayfinder && canvas.scene && !canvas.grid.isGridless && !options.ignoreWalls && !options.ignoreCost) {
+                    let movementHistory: TokenMeasuredMovementWaypoint[] = Array.isArray(options.history)
+                        ? options.history
+                        : options.history
+                          ? this.document.movementHistory
+                          : [];
 
-                return {
-                    result: undefined,
-                    promise: canvas.wayfinder?.findMovementPath(
-                        this.document,
-                        waypoints,
-                        getExploration(this),
-                        this.document.measureMovementPath(movementHistory)
-                    ),
-                    cancel: () => {},
-                };
+                    return {
+                        result: undefined,
+                        promise: canvas.wayfinder?.findMovementPath(
+                            this.document,
+                            waypoints,
+                            game.settings.get("wayfinder", "fogExploration")
+                                ? !(game.user.isGM && (!this.document.sight.enabled || game.settings.get("pf2e", "gmVision"))) &&
+                                      canvas.scene.tokenVision &&
+                                      canvas.scene.fog.exploration
+                                : false,
+                            this.document.measureMovementPath(movementHistory)
+                        ),
+                        cancel: () => {},
+                    };
+                }
             }
 
             const [path] = this.constrainMovementPath(waypoints, options);
-            console.log(path);
             return { result: path, promise: Promise.resolve(path), cancel: () => {} };
         }
     );
+
+    canvas.fog.addEventListener("explored", function (event: Event) {
+        updateExploration();
+    });
 });
 
 Hooks.on("getSceneControlButtons", (controls) => {
@@ -143,11 +166,12 @@ Hooks.on("canvasReady", (canvas: Canvas) => {
             canvas.grid,
             canvas.walls.placeables.map((w) => w.document)
         );
+
+        updateExploration();
     }
 });
 
 Hooks.on("canvasTearDown", (canvas: Canvas) => {
-    canvas.grid;
     canvas.wayfinder?.free();
     canvas.wayfinder = undefined;
 });

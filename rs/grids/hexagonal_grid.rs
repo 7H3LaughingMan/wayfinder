@@ -1,18 +1,15 @@
-use pathfinding::{grid::Grid, undirected::kruskal};
-
 use crate::{
     enums::TokenShapeType,
-    exports::Walls,
-    log,
+    exports::{Fog, Walls},
     modules::geometry,
     nodes::HexagonalNode,
-    traits::{AStar, BaseGrid, Node},
+    traits::{AStar, BaseGrid, Node, SkipLast},
     types::{
         ElevatedPoint, GridMeasurePathResult, GridOffset2D, GridOffset3D, HexagonalGridCube2D, HexagonalGridCube3D,
         Point, Rectangle, TokenDocument, TokenHexagonalShapeData, TokenMovementWaypoint,
     },
 };
-use std::{collections::HashMap, ops::RangeInclusive, vec};
+use std::ops::RangeInclusive;
 
 #[derive(Debug)]
 pub struct HexagonalGrid {
@@ -464,54 +461,6 @@ impl BaseGrid<HexagonalNode, TokenHexagonalShapeData> for HexagonalGrid {
         HexagonalNode { q, r, s, k, d: false }
     }
 
-    fn get_adjacent_nodes(
-        &self,
-        node: &HexagonalNode,
-        token_shape: &TokenHexagonalShapeData,
-        elevation_range: &RangeInclusive<i32>,
-        bounds: &Rectangle,
-        walls: &Walls,
-        explored: &Option<HashMap<GridOffset2D, bool>>,
-    ) -> Vec<(HexagonalNode, u32)> {
-        node.get_neighbors()
-            .into_iter()
-            .filter(|(neighbor, _cost)| elevation_range.contains(&neighbor.k))
-            .filter(|(neighbor, _cost)| bounds.contains_point(self.get_node_center_point(neighbor).into()))
-            .filter(|(neighbor, _cost)| {
-                if let Some(hashmap) = explored {
-                    if let Some(value) = hashmap.get(&self.convert_node_to_offset(*neighbor).into()) {
-                        *value
-                    } else {
-                        false
-                    }
-                } else {
-                    true
-                }
-            })
-            .filter(|(neighbor, _cost)| {
-                if token_shape.width > 1.0 || token_shape.height > 1.0 {
-                    if walls.check_point(
-                        self.get_token_center_point(self.get_node_top_left_point(neighbor), token_shape).into(),
-                    ) {
-                        return false;
-                    }
-                }
-
-                !walls.check_collisions(
-                    self.get_occupied_grid_space_offsets(self.convert_node_to_offset(*node), token_shape)
-                        .iter()
-                        .map(|offset| self.get_offset_center_point(*offset).into())
-                        .zip(
-                            self.get_occupied_grid_space_offsets(self.convert_node_to_offset(*neighbor), token_shape)
-                                .iter()
-                                .map(|offset| self.get_offset_center_point(*offset).into()),
-                        )
-                        .collect(),
-                )
-            })
-            .collect()
-    }
-
     fn get_node(
         &self,
         ElevatedPoint { x, y, elevation }: ElevatedPoint,
@@ -680,95 +629,39 @@ impl BaseGrid<HexagonalNode, TokenHexagonalShapeData> for HexagonalGrid {
             }
         }
     }
-}
 
-impl AStar for HexagonalGrid {
-    fn find_path(
-        &self,
-        waypoints: Vec<TokenMovementWaypoint>,
-        token: &TokenDocument,
-        bounds: &Rectangle,
-        walls: &Walls,
-        explored: &Option<HashMap<GridOffset2D, bool>>,
-        grid_measure_path_result: &GridMeasurePathResult,
-    ) -> Vec<TokenMovementWaypoint> {
-        if waypoints.len() <= 1 {
-            return waypoints;
-        }
+    fn simplify_path(&self, path: Vec<HexagonalNode>) -> Vec<HexagonalNode> {
+        let mut path: Vec<HexagonalNode> = path.clone();
+        let mut i = 0;
 
-        let mut token_shape = self.get_token_shape(token.width, token.height, token.shape);
-        let mut start_waypoint = &waypoints[0];
-        let mut start_node = self.get_node(start_waypoint.create_elevated_point(), &token_shape);
-        let mut path = vec![start_waypoint.clone()];
+        while i + 2 < path.len() {
+            let node_1 = path[i];
+            let node_2 = path[i + 1];
+            let node_3 = path[i + 2];
 
-        start_node.d = grid_measure_path_result.diagonals % 2 != 0;
+            let vector_a = HexagonalGridCube3D {
+                q: (node_2.q - node_1.q).clamp(-1, 1),
+                r: (node_2.r - node_1.r).clamp(-1, 1),
+                s: (node_2.s - node_1.s).clamp(-1, 1),
+                k: (node_2.k - node_1.k).clamp(-1, 1),
+            };
 
-        for end_waypoint in &waypoints[1..] {
-            let end_node = self.get_node(end_waypoint.create_elevated_point(), &token_shape);
-            let elevation_range = i32::min(start_node.k, end_node.k)..=(i32::max(start_node.k, end_node.k));
+            let vector_b = HexagonalGridCube3D {
+                q: (node_3.q - node_2.q).clamp(-1, 1),
+                r: (node_3.r - node_2.r).clamp(-1, 1),
+                s: (node_3.s - node_2.s).clamp(-1, 1),
+                k: (node_3.k - node_2.k).clamp(-1, 1),
+            };
 
-            if let Some((neighbor, _cost)) = start_node
-                .get_neighbors()
-                .iter()
-                .filter(|(neighbor, _cost)| {
-                    if token_shape.width > 1.0 || token_shape.height > 1.0 {
-                        if walls.check_point(
-                            self.get_token_center_point(self.get_node_top_left_point(neighbor), &token_shape).into(),
-                        ) {
-                            return false;
-                        }
-                    }
-
-                    !walls.check_collisions(
-                        self.get_occupied_grid_space_offsets(self.convert_node_to_offset(start_node), &token_shape)
-                            .iter()
-                            .map(|offset| self.get_offset_center_point(*offset).into())
-                            .zip(
-                                self.get_occupied_grid_space_offsets(
-                                    self.convert_node_to_offset(*neighbor),
-                                    &token_shape,
-                                )
-                                .iter()
-                                .map(|offset| self.get_offset_center_point(*offset).into()),
-                            )
-                            .collect(),
-                    )
-                })
-                .find(|(neighbor, _cost)| neighbor.at_node(&end_node))
-            {
-                path.push(end_waypoint.clone());
-
-                token_shape = self.get_token_shape(end_waypoint.width, end_waypoint.height, end_waypoint.shape);
-                start_waypoint = end_waypoint;
-                start_node = *neighbor;
-                continue;
-            }
-
-            if let Some((nodes, _cost)) = pathfinding::prelude::astar(
-                &start_node,
-                |node| self.get_adjacent_nodes(node, &token_shape, &elevation_range, bounds, walls, explored),
-                |node| node.get_distance(&end_node),
-                |node| node.at_node(&end_node),
-            ) {
-                for node in &nodes[1..nodes.len() - 1] {
-                    path.push(start_waypoint.from_elevated_point(
-                        self.get_node_top_left_point(node).round(),
-                        true,
-                        false,
-                        true,
-                    ));
-                }
-
-                path.push(end_waypoint.clone());
-
-                token_shape = self.get_token_shape(end_waypoint.width, end_waypoint.height, end_waypoint.shape);
-                start_waypoint = end_waypoint;
-                start_node = *nodes.last().unwrap();
+            if vector_a == vector_b {
+                path.remove(i + 1);
             } else {
-                break;
+                i += 1;
             }
         }
 
         path
     }
 }
+
+impl AStar<HexagonalNode, TokenHexagonalShapeData> for HexagonalGrid {}

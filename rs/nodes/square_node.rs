@@ -65,6 +65,10 @@ impl Node for SquareNode {
         di + nd
     }
 
+    fn get_elevation(&self) -> i32 {
+        self.k
+    }
+
     fn get_neighbors(&self) -> Vec<(Self, u32)> {
         let SquareNode { i, j, k, d } = *self;
 
@@ -96,5 +100,9 @@ impl Node for SquareNode {
             (SquareNode::new(i + 1, j + 1, k, !d), if d { 2 } else { 1 }),
             (SquareNode::new(i + 1, j + 1, k + 1, !d), if d { 2 } else { 1 }),
         ]
+    }
+
+    fn set_diagonal(&mut self, diagonal: bool) {
+        self.d = diagonal
     }
 }
