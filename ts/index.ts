@@ -114,7 +114,7 @@ Hooks.once("ready", () => {
                             this.document,
                             waypoints,
                             game.settings.get("wayfinder", "fogExploration")
-                                ? !(game.user.isGM && (!this.document.sight.enabled || game.settings.get("pf2e", "gmVision"))) &&
+                                ? !(game.user.isGM && (!this.document.sight.enabled || game.system.id !== "pf2e" || game.settings.get("pf2e", "gmVision"))) &&
                                       canvas.scene.tokenVision &&
                                       canvas.scene.fog.exploration
                                 : false,
