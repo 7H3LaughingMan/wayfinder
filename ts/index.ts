@@ -90,6 +90,15 @@ function updateExploration() {
     );
 }
 
+function hasGmVision() {
+    switch (game.system.id) {
+        case 'pf2e':
+            return game.settings.get("pf2e", "gmVision");
+        default:
+            return true;
+    }
+}
+
 Hooks.once("ready", () => {
     libWrapper.register<TokenPF2e, TokenPF2e["findMovementPath"]>(
         "wayfinder",

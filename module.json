@@ -24,13 +24,6 @@
         }
     ],
     "relationships": {
-        "systems": [
-            {
-                "id": "pf2e",
-                "type": "system",
-                "manifest": "https://github.com/foundryvtt/pf2e/releases/latest/download/system.json"
-            }
-        ],
         "requires": [
             {
                 "id": "lib-wrapper",
