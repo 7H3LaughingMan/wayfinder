@@ -1,4 +1,5 @@
 pub mod grid;
+pub mod region_visibility;
 pub mod token_shape_type;
 pub mod wall_direction;
 pub mod wall_door_state;
@@ -7,6 +8,7 @@ pub mod wall_movement_type;
 pub mod wall_sense_type;
 
 pub use self::grid::Grid;
+pub use self::region_visibility::RegionVisibility;
 pub use self::token_shape_type::TokenShapeType;
 pub use self::wall_direction::WallDirection;
 pub use self::wall_door_state::WallDoorState;

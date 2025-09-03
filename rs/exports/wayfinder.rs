@@ -3,7 +3,7 @@ use web_sys::WebGl2RenderingContext;
 
 use crate::{
     enums::Grid,
-    exports::{Fog, Walls},
+    exports::{Fog, Regions, Walls},
     traits::{AStar, JsDeserialize, JsDeserializeVector, JsSerialize},
     types::{
         GLTexture, GridMeasurePathResult, Point, Rectangle, TokenDocument, TokenFindMovementPathWaypoint,
@@ -46,6 +46,10 @@ extern "C" {
     pub type JsRectangle;
 
     #[derive(Debug)]
+    #[wasm_bindgen(typescript_type = "foundry.documents.RegionDocument[\"_source\"]")]
+    pub type JsRegionDocumentSource;
+
+    #[derive(Debug)]
     #[wasm_bindgen(typescript_type = "foundry.documents.TokenDocument")]
     pub type JsTokenDocument;
 
@@ -67,18 +71,25 @@ pub struct Wayfinder {
     bounds: Rectangle,
     fog: Option<Fog>,
     grid: Grid,
+    regions: Regions,
     walls: Walls,
 }
 
 #[wasm_bindgen]
 impl Wayfinder {
     #[wasm_bindgen(constructor)]
-    pub fn new(bounds: JsRectangle, grid: JsGrid, wall_documents: Vec<JsWallDocument>) -> Wayfinder {
+    pub fn new(
+        bounds: JsRectangle,
+        grid: JsGrid,
+        wall_documents: Vec<JsWallDocument>,
+        region_documents: Vec<JsRegionDocumentSource>,
+    ) -> Wayfinder {
         let bounds = Rectangle::from_js(bounds);
         let grid = Grid::from_js(grid);
+        let regions = Regions::new(region_documents);
         let walls = Walls::new(bounds, wall_documents);
 
-        Wayfinder { bounds, fog: None, grid, walls }
+        Wayfinder { bounds, fog: None, grid, regions, walls }
     }
 
     #[wasm_bindgen(js_name = updateFog)]

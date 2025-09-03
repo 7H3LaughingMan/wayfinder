@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
-- Wayfinder now respects if you have pathfinding disabledW
+- Wayfinder now respects if you have pathfinding disabled
 
 ## [7.0.0] - 2025-06-17
 

@@ -164,7 +164,8 @@ Hooks.on("canvasReady", (canvas: Canvas) => {
         canvas.wayfinder = new Wayfinder(
             canvas.scene.dimensions.sceneRect,
             canvas.grid,
-            canvas.walls.placeables.map((w) => w.document)
+            canvas.walls.placeables.map((w) => w.document),
+            canvas.regions.placeables.map((r) => r.document._source)
         );
 
         updateExploration();
@@ -197,3 +198,9 @@ Hooks.on("deleteWall", (document: WallDocument<Scene>, _options: DatabaseDeleteO
     }
     foundry.documents.TokenDocument;
 });
+
+Hooks.on("createRegion", (document: RegionDocument, _options: DatabaseCreateOperation<RegionDocument<Scene>>, _userId: string) => {});
+
+Hooks.on("updateRegion", (document: RegionDocument, _options: DatabaseCreateOperation<RegionDocument<Scene>>, _userId: string) => {});
+
+Hooks.on("deleteRegion", (document: RegionDocument, _options: DatabaseCreateOperation<RegionDocument<Scene>>, _userId: string) => {});

@@ -3,7 +3,7 @@ import module from "../module.json" with { type: "json" };
 import path from "path";
 import prompts from "prompts";
 
-const dataPath = "C:\\FoundryVTT\\FoundryVTT-WindowsPortable-13.345\\Data";
+const dataPath = "C:\\FoundryVTT\\FoundryVTT-WindowsPortable-13.348\\Data";
 
 const symlinkPath = path.resolve(dataPath, "modules", module.id);
 const symlinkStats = fs.lstatSync(symlinkPath, { throwIfNoEntry: false });

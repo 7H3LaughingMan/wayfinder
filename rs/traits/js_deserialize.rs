@@ -1,3 +1,4 @@
+use js_sys::Array;
 use std::fmt::Debug;
 use wasm_bindgen::JsCast;
 
@@ -38,6 +39,12 @@ impl<T: JsDeserialize + Debug, const L: usize> JsDeserialize for [T; L] {
         let iterator = js_sys::try_iter(data.as_ref()).unwrap().unwrap();
         let vector: Vec<T> = iterator.map(|v| JsDeserialize::from_js(v.unwrap())).collect();
         vector.try_into().unwrap()
+    }
+}
+
+impl<T: JsDeserialize + Debug> JsDeserialize for Vec<T> {
+    fn from_js(data: impl JsCast) -> Self {
+        js_sys::try_iter(data.as_ref()).unwrap().unwrap().map(|v| JsDeserialize::from_js(v.unwrap())).collect()
     }
 }
 

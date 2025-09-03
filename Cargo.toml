@@ -14,8 +14,8 @@ crate-type = ["cdylib"]
 path = "rs/lib.rs"
 
 [dependencies]
-bimap = "0.6.3"
 by_address = "1.2.1"
+clipper2 = "0.5.3"
 console_error_panic_hook = "0.1.7"
 futures = "0.3.31"
 js-sys = "0.3.77"

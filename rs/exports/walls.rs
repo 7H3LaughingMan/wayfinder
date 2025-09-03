@@ -5,7 +5,6 @@ use crate::{
     traits::{JsDeserialize, JsDeserializeVector, JsHelper},
     types::{ElevatedPoint, GridOffset3D, Point, QuadPointer, Quadtree, QuadtreeObject, Ray, Rectangle, Wall},
 };
-use bimap::BiMap;
 use pathfinding::prelude::Edge;
 use std::{cell::RefCell, collections::HashMap, ops::Deref, rc::Rc};
 use wasm_bindgen::{convert::IntoWasmAbi, JsValue};
