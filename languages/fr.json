@@ -1,0 +1,16 @@
+{
+    "wayfinder": {
+        "controls": {
+            "pathfinding": {
+                "title": "Trouver l'itinéraire",
+                "paragraph": "S'il est actif, Wayfinder tentera de trouver le plus court chemin lorsque vous faites glisser un jeton."
+            }
+        },
+        "settings": {
+            "fogExploration": {
+                "name": "Restriction d'exploration liée au brouillard",
+                "hint": "S'il est actif, Wayfinder sera limité aux seuls parties de la carte qui ont été explorées."
+            }
+        }
+    }
+}
