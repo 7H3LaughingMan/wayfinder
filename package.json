@@ -1,27 +1,37 @@
 {
     "name": "wayfinder",
-    "scripts": {
-        "build": "npm run build:wasm && npm run build:vite",
-        "build:vite": "vite build",
-        "build:wasm": "wasm-pack build --target web --release",
-        "changelog": "changelog --format markdownlint --create --release",
-        "link": "tsx ./build/link-foundry.ts",
-        "launch": "tsx ./build/launch-foundry.ts"
-    },
-    "author": "7H3LaughingMan",
-    "license": "MIT",
+    "version": "1.0.0",
+    "description": "",
     "type": "module",
+    "scripts": {
+        "build": "pnpm run build:wasm && pnpm run build:vite",
+        "build:vite": "vite build",
+        "build:wasm": "wasm-pack build",
+        "changelog:create": "changelog --format markdownlint --create",
+        "changelog:release": "changelog --format markdownlint --release",
+        "configure": "node ./build/configure.ts",
+        "launch": "node ./build/launch.ts",
+        "link": "node ./build/link.ts"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
     "devDependencies": {
-        "@types/node": "24.0.3",
         "@types/prompts": "^2.4.9",
-        "keep-a-changelog": "2.6.2",
-        "prettier": "3.5.3",
+        "commander": "^14.0.3",
+        "keep-a-changelog": "^3.0.2",
+        "lowdb": "^7.0.1",
         "prompts": "^2.4.2",
-        "tsx": "4.20.3",
-        "typescript": "5.8.3",
-        "vite": "6.3.5"
+        "typescript": "^6.0.2",
+        "vite": "^8.0.3",
+        "vite-plugin-wasm": "^3.6.0"
     },
     "dependencies": {
-        "foundry-pf2e": "github:7H3LaughingMan/foundry-pf2e"
+        "@7h3laughingman/foundry-helpers": "^13.351.8",
+        "@7h3laughingman/foundry-types": "^13.351.20"
+    },
+    "engines": {
+        "node": ">=24"
     }
 }

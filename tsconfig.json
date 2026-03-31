@@ -1,20 +1,18 @@
 {
     "compilerOptions": {
-        "target": "ESNext",
-        "module": "ESNext",
+        "target": "esnext",
+        "module": "esnext",
         "moduleResolution": "bundler",
         "lib": [
             "ESNext",
-            "DOM",
-        ],
-        "types": [
-            "vite/client",
-            "foundry-pf2e/foundry",
-            "foundry-pf2e/pf2e",
-            "foundry-pf2e/lib-wrapper",
+            "DOM"
         ],
         "noEmit": true,
         "strict": true,
         "allowImportingTsExtensions": true,
+        "types": [
+            "@7h3laughingman/foundry-types",
+            "@7h3laughingman/foundry-helpers/lib-wrapper"
+        ]
     }
 }

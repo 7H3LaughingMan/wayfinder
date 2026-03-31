@@ -1,13 +1,14 @@
 import { defineConfig } from "vite";
-import module from "./module.json" with { type: "json" };
+import wasm from "vite-plugin-wasm";
 
 export default defineConfig({
-    build: {
-        lib: {
-            entry: "ts/index.ts",
-            formats: ["es"],
-            fileName: module.id,
-        },
-        sourcemap: true,
+  build: {
+    lib: {
+      entry: "src/index.ts",
+      formats: ["es"],
+      fileName: "wayfinder",
     },
+    sourcemap: true,
+  },
+  plugins: [wasm()],
 });

@@ -2,7 +2,7 @@
     "id": "wayfinder",
     "title": "Wayfinder",
     "description": "A wayfinder for your everyday needs! It let's you navigate treacherous paths and plan the shortest route to your destination.",
-    "version": "7.1.0",
+    "version": "13.0.0",
     "compatibility": {
         "minimum": "13",
         "verified": "13",
@@ -24,13 +24,6 @@
         }
     ],
     "relationships": {
-        "systems": [
-            {
-                "id": "pf2e",
-                "type": "system",
-                "manifest": "https://github.com/foundryvtt/pf2e/releases/latest/download/system.json"
-            }
-        ],
         "requires": [
             {
                 "id": "lib-wrapper",
@@ -42,7 +35,7 @@
     "url": "https://github.com/7H3LaughingMan/wayfinder",
     "manifest": "",
     "download": "",
-    "license": "https://github.com/7H3LaughingMan/wayfinder/blob/main/LICENSE",
+    "license": "https://github.com/7H3LaughingMan/wayfinder/blob/main/LICENSE.md",
     "readme": "https://github.com/7H3LaughingMan/wayfinder/blob/main/README.md",
     "bugs": "https://github.com/7H3LaughingMan/wayfinder/issues",
     "changelog": "https://github.com/7H3LaughingMan/wayfinder/blob/main/CHANGELOG.md"

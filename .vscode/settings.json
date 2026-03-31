@@ -4,12 +4,16 @@
     "editor.formatOnSave": true,
     "[json]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "prettier.endOfLine": "lf",
         "prettier.printWidth": 140,
-        "prettier.tabWidth": 4
+        "prettier.tabWidth": 4,
+        "prettier.trailingComma": "none"
     },
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "prettier.endOfLine": "lf",
         "prettier.printWidth": 140,
-        "prettier.tabWidth": 4
+        "prettier.tabWidth": 4,
+        "prettier.trailingComma": "none"
     }
 }

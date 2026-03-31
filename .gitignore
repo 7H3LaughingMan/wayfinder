@@ -1,11 +1,6 @@
+build/wayfinder.json
 dist/
-
 node_modules/
-
-packs/*
-!packs/src/
-
-pkg
-target
-
+pkg/
+target/
 wayfinder.lock
