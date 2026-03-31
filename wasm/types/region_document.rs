@@ -1,12 +1,11 @@
-use crate::types::{Color, ElevatedPoint, foundry::documents::JsRegionDocument};
-use geo::{BoundingRect, Contains, Coord, MultiPolygon, Rect, unary_union};
-use std::ops::RangeInclusive;
+use crate::types::{Color, ElevatedPoint, ElevationRange, foundry::documents::JsRegionDocument};
+use geo::{BoundingRect, Intersects, Line, MultiPolygon, Rect, unary_union};
 
 #[derive(Clone, Debug)]
 pub struct RegionDocument {
     pub id: String,
     color: Color,
-    elevation: RangeInclusive<f64>,
+    elevation: ElevationRange,
     multi_polygon: MultiPolygon,
     bounds: Rect,
 }
@@ -44,9 +43,10 @@ impl BoundingRect<f64> for RegionDocument {
     }
 }
 
-impl Contains<ElevatedPoint> for RegionDocument {
-    fn contains(&self, ElevatedPoint { x, y, elevation }: &ElevatedPoint) -> bool {
-        self.multi_polygon.contains(&Coord::from((*x, *y))) && self.elevation.contains(elevation)
+impl Intersects<(ElevatedPoint, ElevatedPoint)> for RegionDocument {
+    fn intersects(&self, (a, b): &(ElevatedPoint, ElevatedPoint)) -> bool {
+        self.elevation.intersects(ElevationRange::from_points(*a, *b))
+            && self.multi_polygon.intersects(&Line::new(*a, *b))
     }
 }
 

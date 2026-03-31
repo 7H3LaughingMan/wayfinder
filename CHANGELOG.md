@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [13.0.1] - 2026-03-31
+
+### Fixed
+
+- Fixed a typo that prevented Wayfinder from getting the fog of war properly
+
 ## [13.0.0] - 2026-03-31
 
 This is pretty much a complete re-write of the Rust side of things in order to make the module not dependent on a specific system.
@@ -117,6 +123,7 @@ Foundry Virtual Tabletop - Version 13 Support!
 - Fixed a problem with checking fog exploration where it was slightly off when checking pixels
 - Improved Fog Exploration
 
+[13.0.1]: https://github.com/7H3LaughingMan/wayfinder/compare/v13.0.0...v13.0.1
 [13.0.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v7.1.0...v13.0.0
 [7.1.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v7.0.0...v7.1.0
 [7.0.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v6.8.1...v7.0.0

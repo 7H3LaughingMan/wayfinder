@@ -1,4 +1,4 @@
-use geo::{BoundingRect, Contains, Coord, Intersects, Rect};
+use geo::{BoundingRect, Coord, Intersects, Rect};
 use rstar::{AABB, RTreeObject};
 use std::{
     cell::{Ref, RefCell, RefMut},
@@ -79,14 +79,6 @@ where T: BoundingRect<f64, Output = Rect<f64>>
     fn envelope(&self) -> Self::Envelope {
         let bounds = self.borrow().bounding_rect();
         Self::Envelope::from_corners(bounds.min(), bounds.max())
-    }
-}
-
-impl<T, Rhs> Contains<Rhs> for ByAddress<T>
-where T: Contains<Rhs>
-{
-    fn contains(&self, rhs: &Rhs) -> bool {
-        self.borrow().contains(rhs)
     }
 }
 

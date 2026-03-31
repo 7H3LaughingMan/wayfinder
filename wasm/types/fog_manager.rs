@@ -36,7 +36,7 @@ impl FogManager {
             0,
             framebuffer.width() as i32,
             framebuffer.height() as i32,
-            WebGl2RenderingContext::RED,
+            WebGl2RenderingContext::RGBA,
             WebGl2RenderingContext::UNSIGNED_BYTE,
             Some(data.as_mut_slice()),
         );

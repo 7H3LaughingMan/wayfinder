@@ -6,6 +6,7 @@ pub mod shapes;
 
 mod by_address;
 mod color;
+mod elevation_range;
 mod fog_manager;
 mod grid;
 mod grid_measure_path_result;
@@ -17,7 +18,6 @@ mod region_document;
 mod region_manager;
 mod scene;
 mod token_document;
-mod token_find_movement_path_options;
 mod token_find_movement_path_waypoint;
 mod token_movement_waypoint;
 mod token_shape;
@@ -28,6 +28,8 @@ mod wall_manager;
 pub use self::by_address::*;
 #[allow(unused_imports)]
 pub use self::color::*;
+#[allow(unused_imports)]
+pub use self::elevation_range::*;
 #[allow(unused_imports)]
 pub use self::fog_manager::*;
 #[allow(unused_imports)]
@@ -50,8 +52,6 @@ pub use self::region_manager::*;
 pub use self::scene::*;
 #[allow(unused_imports)]
 pub use self::token_document::*;
-#[allow(unused_imports)]
-pub use self::token_find_movement_path_options::*;
 #[allow(unused_imports)]
 pub use self::token_find_movement_path_waypoint::*;
 #[allow(unused_imports)]

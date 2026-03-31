@@ -1,7 +1,7 @@
 use crate::types::{ByAddress, ElevatedPoint, RegionDocument};
-use geo::Contains;
+use geo::Intersects;
 use rstar::{AABB, RTree};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug)]
 pub struct RegionManager {
@@ -44,11 +44,11 @@ impl RegionManager {
         self.add_region(region_document.clone());
     }
 
-    pub fn get_regions(&self, point: ElevatedPoint) -> Vec<RegionDocument> {
+    fn get_intersections(&self, start: ElevatedPoint, end: ElevatedPoint) -> HashSet<ByAddress<RegionDocument>> {
         self.tree
-            .locate_in_envelope_intersecting(&AABB::from_point(point.into()))
-            .filter(|region| region.borrow().contains(&point))
-            .map(|region| region.borrow().clone())
+            .locate_in_envelope_intersecting(&AABB::from_corners(start.into(), end.into()))
+            .filter(|region| region.intersects(&(start, end)))
+            .cloned()
             .collect()
     }
 }

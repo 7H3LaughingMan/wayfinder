@@ -5,7 +5,7 @@ use crate::{
         FogManager, Grid, GridMeasurePathResult, RegionDocument, RegionManager, Scene, TokenDocument,
         TokenFindMovementPathWaypoint, TokenMovementWaypoint, WallDocument, WallManager,
         foundry::{
-            JsTokenFindMovementPathWaypoint,
+            JsPoint, JsTokenFindMovementPathWaypoint,
             documents::{JsRegionDocument, JsScene, JsTokenDocument, JsTokenMovementWaypoint, JsWallDocument},
             grid::JsGridMeasurePathResult,
         },
@@ -43,6 +43,11 @@ impl Wayfinder {
             region_manager: RegionManager::new(region_documents),
             wall_manager: WallManager::new(wall_documents),
         }
+    }
+
+    #[wasm_bindgen(js_name = isPointExplored)]
+    pub fn is_point_explored(&self, point: JsPoint) -> bool {
+        self.fog_manager.is_point_explored(point.into())
     }
 
     #[wasm_bindgen(js_name = updateFog)]

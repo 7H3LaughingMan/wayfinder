@@ -7,8 +7,6 @@ pub mod utils;
 
 mod constants;
 mod game;
-mod token_find_movement_path_job;
-mod token_find_movement_path_options;
 mod token_find_movement_path_waypoint;
 mod types;
 
@@ -16,10 +14,6 @@ mod types;
 pub use self::constants::*;
 #[allow(unused_imports)]
 pub use self::game::*;
-#[allow(unused_imports)]
-pub use self::token_find_movement_path_job::*;
-#[allow(unused_imports)]
-pub use self::token_find_movement_path_options::*;
 #[allow(unused_imports)]
 pub use self::token_find_movement_path_waypoint::*;
 #[allow(unused_imports)]
