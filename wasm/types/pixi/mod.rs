@@ -7,6 +7,7 @@ mod gl_framebuffer;
 mod gl_framebuffers;
 mod gl_texture;
 mod graphics;
+mod observable_point;
 mod polygon;
 mod rectangle;
 mod render_texture;
@@ -31,6 +32,8 @@ pub use self::gl_framebuffers::*;
 pub use self::gl_texture::*;
 #[allow(unused_imports)]
 pub use self::graphics::*;
+#[allow(unused_imports)]
+pub use self::observable_point::*;
 #[allow(unused_imports)]
 pub use self::polygon::*;
 #[allow(unused_imports)]

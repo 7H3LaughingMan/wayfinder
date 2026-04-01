@@ -5,6 +5,7 @@ use web_sys::{WebGlFramebuffer, WebGlRenderbuffer, WebGlTexture};
 
 #[wasm_bindgen]
 extern "C" {
+    #[derive(Clone, Debug)]
     #[wasm_bindgen(
         extends = Object,
         js_name = GLFramebuffer,

@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [13.0.2] - 2026-04-01
+
+### Fixed
+
+- FogManager now accounts for the "scale" of the fog sprite when attempting to extract the exploration data
+
 ## [13.0.1] - 2026-03-31
 
 ### Fixed
@@ -123,6 +129,7 @@ Foundry Virtual Tabletop - Version 13 Support!
 - Fixed a problem with checking fog exploration where it was slightly off when checking pixels
 - Improved Fog Exploration
 
+[13.0.2]: https://github.com/7H3LaughingMan/wayfinder/compare/v13.0.1...v13.0.2
 [13.0.1]: https://github.com/7H3LaughingMan/wayfinder/compare/v13.0.0...v13.0.1
 [13.0.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v7.1.0...v13.0.0
 [7.1.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v7.0.0...v7.1.0

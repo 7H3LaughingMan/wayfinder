@@ -1,5 +1,5 @@
 use base64::{Engine, prelude::BASE64_STANDARD};
-use knossos::maze::{Cell, Kruskal, OrthogonalMazeBuilder};
+use knossos::maze::{Cell, Eller, OrthogonalMazeBuilder};
 use svg::{
     Document,
     node::element::{Path, path::Data},
@@ -17,7 +17,7 @@ pub struct Scene {
 
 impl Scene {
     pub fn new(width: usize, height: usize) -> Self {
-        let maze = OrthogonalMazeBuilder::new().height(height).width(width).algorithm(Box::new(Kruskal)).build();
+        let maze = OrthogonalMazeBuilder::new().height(height).width(width).algorithm(Box::new(Eller)).build();
 
         let mut walls = Vec::<geo::Line>::new();
 

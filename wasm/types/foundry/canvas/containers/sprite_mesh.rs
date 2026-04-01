@@ -1,3 +1,4 @@
+use crate::types::pixi::JsObservablePoint;
 use js_sys::Object;
 use wasm_bindgen::prelude::*;
 
@@ -11,4 +12,7 @@ extern "C" {
         typescript_type = "foundry.canvas.controls.SpriteMesh"
     )]
     pub type JsSpriteMesh;
+
+    #[wasm_bindgen(method, getter)]
+    pub fn scale(this: &JsSpriteMesh) -> JsObservablePoint;
 }

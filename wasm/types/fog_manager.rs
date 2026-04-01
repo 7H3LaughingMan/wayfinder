@@ -22,8 +22,10 @@ impl FogManager {
         let renderer = CANVAS.app().renderer();
         let gl = renderer.gl();
 
-        let render_texture = renderer
-            .generate_texture(CANVAS.fog().sprite().into(), JsObject::new().set("resolution", RESOLUTION).into());
+        let render_texture = renderer.generate_texture(
+            CANVAS.fog().sprite().into(),
+            JsObject::new().set("resolution", CANVAS.fog().sprite().scale().x() * RESOLUTION).into(),
+        );
         let framebuffer = render_texture.framebuffer();
         let gl_framebuffer = framebuffer.gl_framebuffers().get(renderer.CONTEXT_UID()).unwrap();
 
