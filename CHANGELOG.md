@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [13.0.3] - 2026-04-02
+
+### Changed
+
+- When getting neighboring nodes, return nodes that don't require diagonal movement first before returning ones that do require diagonal movement
+
 ## [13.0.2] - 2026-04-01
 
 ### Fixed
@@ -129,6 +135,7 @@ Foundry Virtual Tabletop - Version 13 Support!
 - Fixed a problem with checking fog exploration where it was slightly off when checking pixels
 - Improved Fog Exploration
 
+[13.0.3]: https://github.com/7H3LaughingMan/wayfinder/compare/v13.0.2...v13.0.3
 [13.0.2]: https://github.com/7H3LaughingMan/wayfinder/compare/v13.0.1...v13.0.2
 [13.0.1]: https://github.com/7H3LaughingMan/wayfinder/compare/v13.0.0...v13.0.1
 [13.0.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v7.1.0...v13.0.0
