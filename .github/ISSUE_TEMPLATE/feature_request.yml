@@ -1,0 +1,18 @@
+name: Feature Requestion
+description: Suggest an idea for this project
+title: "[Feature Request]: "
+labels: ["enhancement"]
+assignees:
+  - 7H3LaughingMan
+body:
+  - type: textarea
+    attributes:
+      label: Description
+      description: Please provide a detail description of what you are requesting.
+  - type: checkboxes
+    attributes:
+      label: Confirmation
+      description: Please confirm the following.
+      options:
+        - label: I have confirmed that there is not an already open feature request for this.
+          required: true

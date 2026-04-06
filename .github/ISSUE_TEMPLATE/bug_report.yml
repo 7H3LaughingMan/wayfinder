@@ -1,0 +1,40 @@
+name: Bug Report
+description: Create a report to help us improve
+title: "[Bug]: "
+labels: ["bug"]
+assignees:
+  - 7H3LaughingMan
+body:
+  - type: textarea
+    attributes:
+      label: Description
+      description: Please provide a detail description of what you are reporting.
+  - type: input
+    attributes:
+      label: Foundry VTT Version
+      description: Please provide which version of Foundry VTT that you are using.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: System/Version
+      description: Please provide the name of the system and which version of it that you are using.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Wayfinder Version
+      description: Please provide which version of Wayfinder that you are using.
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: Confirmation
+      description: Please confirm the following.
+      options:
+        - label: I have confirmed that this issue is not the result of another module by using [Find the Culprit!](https://foundryvtt.com/packages/find-the-culprit/).
+          required: true
+        - label: I have confirmed that there is not an already open bug report for what I am reporting.
+          required: true
+        - label: I have taken the time to read to read the [README](https://github.com/7H3LaughingMan/wayfinder/blob/main/README.md) and followed the basic troubleshooting instructions provided.
+          required: true
