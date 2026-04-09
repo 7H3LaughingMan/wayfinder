@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [13.1.0] - 2026-04-09
+
+### Added
+
+- 4th Dimensional Navigation
+  - When attempting to find a path it will now generate and walk from the current node to the goal, if this path is valid and doesn't run into any walls or enter unexplored parts of the map it will treat the goal as being "next" to the current node with the actual cost to move down the path as the cost of moving to the goal. That means if it thinks there is a cheaper route it will try and follow that first, but if it ends up costing the same as the direct path it will use that.
+
+### Changed
+
+- When the Grid Diagonal Rule is set to Exact it will instead treat it as Approximate, this doesn't change anything on Foundry's side but just changes how Wayfinder calculates the cost which allows me to do the next bit.
+- Costs are now in a "decimal" format, so instead of using a normal floating point numeric that can lose precision it nows uses a fixed decimal that doesn't lose precision as easly. Meaning `0.1 + 0.2 = 0.3` instead of `0.1 + 0.2 = 0.30000000000000004`. With the new changes above we only need 2-4 decimals of precision which doesn't get lost.
+
 ## [13.0.3] - 2026-04-02
 
 ### Changed
@@ -135,6 +147,7 @@ Foundry Virtual Tabletop - Version 13 Support!
 - Fixed a problem with checking fog exploration where it was slightly off when checking pixels
 - Improved Fog Exploration
 
+[13.1.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v13.0.3...v13.1.0
 [13.0.3]: https://github.com/7H3LaughingMan/wayfinder/compare/v13.0.2...v13.0.3
 [13.0.2]: https://github.com/7H3LaughingMan/wayfinder/compare/v13.0.1...v13.0.2
 [13.0.1]: https://github.com/7H3LaughingMan/wayfinder/compare/v13.0.0...v13.0.1

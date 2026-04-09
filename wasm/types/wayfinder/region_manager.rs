@@ -1,4 +1,4 @@
-use crate::types::{ByAddress, ElevatedPoint, RegionDocument};
+use crate::types::wayfinder::{ByAddress, ElevatedPoint, RegionDocument};
 use geo::Intersects;
 use rstar::{AABB, RTree};
 use std::collections::{HashMap, HashSet};

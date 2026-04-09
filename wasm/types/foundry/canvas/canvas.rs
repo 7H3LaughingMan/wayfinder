@@ -1,5 +1,6 @@
 use crate::types::{
     foundry::{
+        JsPoint,
         canvas::{
             layers::{JsControlsLayer, JsRegionLayer, JsWallsLayer},
             perception::JsFogManager,
@@ -42,6 +43,9 @@ extern "C" {
 
     #[wasm_bindgen(method, getter)]
     pub fn walls(this: &JsCanvas) -> JsWallsLayer;
+
+    #[wasm_bindgen(method)]
+    pub async fn ping(this: &JsCanvas, origin: JsPoint);
 }
 
 #[wasm_bindgen]

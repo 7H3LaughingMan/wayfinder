@@ -1,6 +1,6 @@
 use crate::{
     CANVAS,
-    types::{Point, helpers::JsObject},
+    types::{helpers::JsObject, wayfinder::Point},
 };
 use geo::{Contains, Coord, Rect};
 use std::fmt::Debug;

@@ -1,7 +1,7 @@
 use crate::types::{
-    Scene,
     foundry::{WallDirection, WallDoorState, WallDoorType, WallMovementType, WallSenseType},
     helpers::{JsArray, JsObject},
+    wayfinder::Scene,
 };
 use geo::{Coord, CoordsIter};
 use js_sys::{Array, Object};

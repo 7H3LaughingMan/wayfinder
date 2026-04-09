@@ -1,4 +1,4 @@
-use crate::types::{ByAddress, WallDocument};
+use crate::types::wayfinder::{ByAddress, WallDocument};
 use geo::{BoundingRect, Coord, Intersects, Line, Rect};
 use rstar::{AABB, RTree};
 use std::collections::HashMap;

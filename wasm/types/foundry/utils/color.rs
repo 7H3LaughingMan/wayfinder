@@ -1,3 +1,4 @@
+use crate::types::wayfinder::Color;
 use js_sys::{ArrayTuple, Number};
 use wasm_bindgen::prelude::*;
 
@@ -124,8 +125,8 @@ impl js_sys::Iterable for JsColor {
     type Item = Number;
 }
 
-impl From<crate::types::Color> for JsColor {
-    fn from(value: crate::types::Color) -> Self {
+impl From<Color> for JsColor {
+    fn from(value: Color) -> Self {
         JsColor::new(JsValue::from_f64(value.into()))
     }
 }

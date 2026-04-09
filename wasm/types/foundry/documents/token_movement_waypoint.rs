@@ -1,4 +1,4 @@
-use crate::types::{TokenMovementWaypoint, foundry::TokenShapeType, helpers::JsObject};
+use crate::types::{foundry::TokenShapeType, helpers::JsObject, wayfinder::TokenMovementWaypoint};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

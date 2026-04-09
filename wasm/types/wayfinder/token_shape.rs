@@ -1,6 +1,6 @@
 use crate::{
     traits::TokenShape,
-    types::{GridOffset2D, Point},
+    types::wayfinder::{GridOffset2D, Point},
 };
 
 #[derive(Clone, Debug)]

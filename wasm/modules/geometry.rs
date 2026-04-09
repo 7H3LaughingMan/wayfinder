@@ -1,4 +1,4 @@
-use crate::types::Point;
+use crate::types::wayfinder::Point;
 
 pub fn polygon_centroid(points: &Vec<Point>) -> Point {
     let n = points.len();

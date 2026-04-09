@@ -2,12 +2,14 @@ use crate::{
     CANVAS,
     exports::CancellationToken,
     types::{
-        FogManager, Grid, GridMeasurePathResult, RegionDocument, RegionManager, Scene, TokenDocument,
-        TokenFindMovementPathWaypoint, TokenMovementWaypoint, WallDocument, WallManager,
         foundry::{
-            JsPoint, JsTokenFindMovementPathWaypoint,
+            JsTokenFindMovementPathWaypoint,
             documents::{JsRegionDocument, JsScene, JsTokenDocument, JsTokenMovementWaypoint, JsWallDocument},
             grid::JsGridMeasurePathResult,
+        },
+        wayfinder::{
+            FogManager, GridMeasurePathResult, RegionDocument, RegionManager, Scene, TokenDocument,
+            TokenFindMovementPathWaypoint, TokenMovementWaypoint, WallDocument, WallManager, grid::Grid,
         },
     },
 };
@@ -43,11 +45,6 @@ impl Wayfinder {
             region_manager: RegionManager::new(region_documents),
             wall_manager: WallManager::new(wall_documents),
         }
-    }
-
-    #[wasm_bindgen(js_name = isPointExplored)]
-    pub fn is_point_explored(&self, point: JsPoint) -> bool {
-        self.fog_manager.is_point_explored(point.into())
     }
 
     #[wasm_bindgen(js_name = updateFog)]
@@ -116,8 +113,8 @@ impl Wayfinder {
             new_waypoints,
             &token_document,
             &self.scene_rect,
-            &self.fog_manager,
-            use_exploration,
+            if use_exploration { Some(&self.fog_manager) } else { None },
+            &self.region_manager,
             &self.wall_manager,
             &grid_measure_path_result,
         );

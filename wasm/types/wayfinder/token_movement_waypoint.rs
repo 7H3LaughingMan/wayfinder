@@ -1,6 +1,6 @@
 use crate::types::{
-    ElevatedPoint,
     foundry::{TokenShapeType, documents::JsTokenMovementWaypoint},
+    wayfinder::ElevatedPoint,
 };
 
 #[derive(Clone, Debug)]

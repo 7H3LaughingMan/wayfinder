@@ -1,6 +1,6 @@
 use crate::types::{
-    TokenMovementWaypoint,
     foundry::{JsTokenFindMovementPathWaypoint, TokenShapeType},
+    wayfinder::TokenMovementWaypoint,
 };
 
 #[derive(Clone, Debug)]

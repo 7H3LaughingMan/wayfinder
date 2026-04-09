@@ -5,7 +5,7 @@ pub struct GridMeasurePathResult {
     pub cost: f64,
     pub spaces: i32,
     pub diagonals: i32,
-    pub euclidean: f64,
+    pub euclidiean: f64,
 }
 
 impl From<JsGridMeasurePathResult> for GridMeasurePathResult {
@@ -15,7 +15,7 @@ impl From<JsGridMeasurePathResult> for GridMeasurePathResult {
             cost: value.cost(),
             spaces: value.spaces() as i32,
             diagonals: value.diagonals() as i32,
-            euclidean: value.euclidean(),
+            euclidiean: value.euclidean(),
         }
     }
 }

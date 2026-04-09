@@ -1,4 +1,7 @@
-use crate::types::{Color, ElevatedPoint, ElevationRange, foundry::documents::JsRegionDocument};
+use crate::types::{
+    foundry::documents::JsRegionDocument,
+    wayfinder::{Color, ElevatedPoint, ElevationRange},
+};
 use geo::{BoundingRect, Intersects, Line, MultiPolygon, Rect, unary_union};
 
 #[derive(Clone, Debug)]

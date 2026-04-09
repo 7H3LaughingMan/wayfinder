@@ -1,3 +1,5 @@
+use crate::types::foundry::grid::{JsGridOffset2D, JsGridOffset3D};
+
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 pub struct GridOffset2D {
     pub i: i32,
@@ -19,6 +21,12 @@ impl Ord for GridOffset2D {
             std::cmp::Ordering::Equal => self.i.cmp(&other.i),
             ord => ord,
         }
+    }
+}
+
+impl From<JsGridOffset2D> for GridOffset2D {
+    fn from(value: JsGridOffset2D) -> Self {
+        GridOffset2D { i: value.i() as i32, j: value.j() as i32 }
     }
 }
 
@@ -50,5 +58,11 @@ impl Ord for GridOffset3D {
             },
             ord => ord,
         }
+    }
+}
+
+impl From<JsGridOffset3D> for GridOffset3D {
+    fn from(value: JsGridOffset3D) -> Self {
+        GridOffset3D { i: value.i() as i32, j: value.j() as i32, k: value.k() as i32 }
     }
 }

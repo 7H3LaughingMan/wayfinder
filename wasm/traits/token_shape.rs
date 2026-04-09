@@ -1,4 +1,4 @@
-use crate::types::Point;
+use crate::types::wayfinder::Point;
 
 pub trait TokenShape {
     fn get_points(&self) -> Vec<Point>;

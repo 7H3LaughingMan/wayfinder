@@ -10,11 +10,7 @@ mod game;
 mod token_find_movement_path_waypoint;
 mod types;
 
-#[allow(unused_imports)]
 pub use self::constants::*;
-#[allow(unused_imports)]
 pub use self::game::*;
-#[allow(unused_imports)]
 pub use self::token_find_movement_path_waypoint::*;
-#[allow(unused_imports)]
 pub use self::types::*;

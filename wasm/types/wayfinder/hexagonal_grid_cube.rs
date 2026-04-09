@@ -1,10 +1,16 @@
-use crate::types::HexagonalNode;
+use crate::types::wayfinder::node::HexagonalNode;
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 pub struct HexagonalGridCube2D {
     pub q: i32,
     pub r: i32,
     pub s: i32,
+}
+
+impl HexagonalGridCube2D {
+    pub fn new(q: i32, r: i32, s: i32) -> Self {
+        HexagonalGridCube2D { q, r, s }
+    }
 }
 
 impl From<HexagonalGridCube3D> for HexagonalGridCube2D {
@@ -25,6 +31,12 @@ pub struct HexagonalGridCube3D {
     pub r: i32,
     pub s: i32,
     pub k: i32,
+}
+
+impl HexagonalGridCube3D {
+    pub fn new(q: i32, r: i32, s: i32, k: i32) -> Self {
+        HexagonalGridCube3D { q, r, s, k }
+    }
 }
 
 impl From<HexagonalGridCube2D> for HexagonalGridCube3D {
