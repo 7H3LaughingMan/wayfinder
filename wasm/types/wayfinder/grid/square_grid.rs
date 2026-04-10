@@ -1,5 +1,4 @@
 use crate::{
-    GRID_DIAGONAL,
     exports::CancellationToken,
     traits::{AStar, BaseGrid},
     types::{
@@ -20,6 +19,51 @@ use tap::Tap;
 pub struct SquareGrid {
     pub size: i32,
     pub distance: f64,
+    pub diagonals: GridDiagonalRule,
+}
+
+impl SquareGrid {
+    pub fn measure_distance(
+        SquareNode { i: i0, j: j0, k: k0, d: d0 }: SquareNode,
+        SquareNode { i: i1, j: j1, k: k1, d: _ }: SquareNode,
+        diagonals: GridDiagonalRule,
+    ) -> Decimal {
+        let mut c = dec!(0);
+        let mut nd = match diagonals {
+            GridDiagonalRule::Alternating2 => match d0 {
+                true => dec!(0),
+                false => dec!(1.5),
+            },
+            _ => match d0 {
+                true => dec!(1.5),
+                false => dec!(0),
+            },
+        };
+
+        let [di, dj, dk] =
+            [Decimal::from((i0 - i1).abs()), Decimal::from((j0 - j1).abs()), Decimal::from((k0 - k1).abs())].tap_mut(
+                |values| {
+                    values.sort();
+                    values.reverse();
+                },
+            );
+        let nd0 = nd;
+
+        match diagonals {
+            GridDiagonalRule::Equidistant => c += di,
+            GridDiagonalRule::Exact | GridDiagonalRule::Approximate => {
+                c += di + ((dec!(0.5) * (dj - dk)) + (dec!(0.75) * dk))
+            }
+            GridDiagonalRule::Rectilinear => c += di + (dj + dk),
+            GridDiagonalRule::Alternating1 | GridDiagonalRule::Alternating2 => {
+                nd += dj + (dec!(0.5) * dk);
+                c += di + ((nd / dec!(2)).floor() - (nd0 / dec!(2)).floor());
+            }
+            GridDiagonalRule::Illegal => c += di + (dj + dk),
+        };
+
+        c
+    }
 }
 
 impl BaseGrid<SquareNode, TokenSquareShape> for SquareGrid {
@@ -64,7 +108,7 @@ impl BaseGrid<SquareNode, TokenSquareShape> for SquareGrid {
             let m = (n0.i == n1.i) as i32 + (n0.j == n1.j) as i32 + (n0.k == n1.k) as i32;
             let k = match m {
                 2 => dec!(1),
-                1 => match *GRID_DIAGONAL {
+                1 => match self.diagonals {
                     GridDiagonalRule::Equidistant => dec!(1),
                     GridDiagonalRule::Exact | GridDiagonalRule::Approximate => dec!(1.5),
                     GridDiagonalRule::Rectilinear => dec!(2),
@@ -78,7 +122,7 @@ impl BaseGrid<SquareNode, TokenSquareShape> for SquareGrid {
                     },
                     GridDiagonalRule::Illegal => dec!(0),
                 },
-                _ => match *GRID_DIAGONAL {
+                _ => match self.diagonals {
                     GridDiagonalRule::Equidistant => dec!(1),
                     GridDiagonalRule::Exact | GridDiagonalRule::Approximate => dec!(1.75),
                     GridDiagonalRule::Rectilinear => dec!(3),
@@ -110,7 +154,7 @@ impl BaseGrid<SquareNode, TokenSquareShape> for SquareGrid {
     }
 
     fn get_adjacent_nodes(&self, SquareNode { i, j, k, d }: SquareNode) -> Vec<(SquareNode, Decimal)> {
-        match *GRID_DIAGONAL {
+        match self.diagonals {
             GridDiagonalRule::Equidistant => vec![
                 (SquareNode::new(i - 1, j - 1, k - 1, !d), dec!(1)),
                 (SquareNode::new(i - 1, j - 1, k, !d), dec!(1)),
@@ -269,7 +313,7 @@ impl BaseGrid<SquareNode, TokenSquareShape> for SquareGrid {
 
         let SquareNode { i: mut i0, j: mut j0, k: mut k0, d: d0 } = waypoints[0];
         let mut path = vec![SquareNode::new(i0, j0, k0, d0)];
-        let diagonals = *GRID_DIAGONAL != GridDiagonalRule::Illegal;
+        let diagonals = self.diagonals != GridDiagonalRule::Illegal;
 
         for SquareNode { i: i1, j: j1, k: k1, d: _ } in waypoints.into_iter().dropping(1) {
             if (i0 == i1) && (j0 == j1) && (k0 == k1) {
@@ -528,7 +572,7 @@ impl BaseGrid<SquareNode, TokenSquareShape> for SquareGrid {
 
         let mut c = dec!(0);
         let mut n0 = waypoints[0];
-        let mut nd = match *GRID_DIAGONAL {
+        let mut nd = match self.diagonals {
             GridDiagonalRule::Alternating2 => match n0.d {
                 true => dec!(0),
                 false => dec!(1.5),
@@ -551,7 +595,7 @@ impl BaseGrid<SquareNode, TokenSquareShape> for SquareGrid {
             });
             let nd0 = nd;
 
-            match *GRID_DIAGONAL {
+            match self.diagonals {
                 GridDiagonalRule::Equidistant => c += di,
                 GridDiagonalRule::Exact | GridDiagonalRule::Approximate => {
                     c += di + ((dec!(0.5) * (dj - dk)) + (dec!(0.75) * dk))
@@ -625,7 +669,7 @@ impl BaseGrid<SquareNode, TokenSquareShape> for SquareGrid {
         let di = i32::abs(i1 - i2);
         let dj = i32::abs(j1 - j2);
         let dk = i32::abs(k1 - k2);
-        if *GRID_DIAGONAL != GridDiagonalRule::Illegal { di.max(dj.max(dk)) == 1 } else { (di + dj + dk) == 1 }
+        if self.diagonals != GridDiagonalRule::Illegal { di.max(dj.max(dk)) == 1 } else { (di + dj + dk) == 1 }
     }
 
     fn test_diagonal(
@@ -636,7 +680,7 @@ impl BaseGrid<SquareNode, TokenSquareShape> for SquareGrid {
         let di = i32::abs(i1 - i2);
         let dj = i32::abs(j1 - j2);
         let dk = i32::abs(k1 - k2);
-        if *GRID_DIAGONAL != GridDiagonalRule::Illegal {
+        if self.diagonals != GridDiagonalRule::Illegal {
             if di.max(dj.max(dk)) == 1 { (di + dj + dk) >= 2 } else { false }
         } else {
             false
@@ -678,7 +722,9 @@ impl AStar<SquareNode, TokenSquareShape> for SquareGrid {
                     false => self
                         .calculate_cost(*node, end_node, &token_shape, fog_manager, region_manager, wall_manager)
                         .into_iter()
-                        .chain(self.get_adjacent_nodes(*node).into_iter())
+                        .chain(self.get_adjacent_nodes(*node).into_iter().sorted_by_key(|(successor, _cost)| {
+                            SquareGrid::measure_distance(*successor, end_node, GridDiagonalRule::Rectilinear)
+                        }))
                         .filter(|(successor, _cost)| elevation_range.contains(successor.k))
                         .filter(|(successor, _cost)| {
                             scene_rect.contains(&Coord::from(self.get_node_center_point(*successor)))

@@ -69,6 +69,3 @@ static GAME: std::sync::LazyLock<types::foundry::JsGame> = std::sync::LazyLock::
 
     GAME.with(types::foundry::JsGame::clone)
 });
-
-static GRID_DIAGONAL: std::sync::LazyLock<types::foundry::GridDiagonalRule> =
-    std::sync::LazyLock::new(|| GAME.settings().get_setting("core", "gridDiagonals"));

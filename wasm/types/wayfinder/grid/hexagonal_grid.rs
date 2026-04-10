@@ -1,5 +1,5 @@
 use crate::{
-    EPSILON, GRID_DIAGONAL,
+    EPSILON,
     exports::CancellationToken,
     modules::{geometry, math},
     traits::{AStar, BaseGrid},
@@ -26,9 +26,54 @@ pub struct HexagonalGrid {
     pub size_y: f64,
     pub columns: bool,
     pub even: bool,
+    pub diagonals: GridDiagonalRule,
 }
 
 impl HexagonalGrid {
+    pub fn measure_distance(
+        HexagonalNode { q: q0, r: r0, s: s0, k: k0, d: d0 }: HexagonalNode,
+        HexagonalNode { q: q1, r: r1, s: s1, k: k1, d: _ }: HexagonalNode,
+        diagonals: GridDiagonalRule,
+    ) -> Decimal {
+        let mut c = dec!(0);
+        let mut nd = match diagonals {
+            GridDiagonalRule::Alternating2 => match d0 {
+                true => dec!(0),
+                false => dec!(1),
+            },
+            _ => match d0 {
+                true => dec!(1),
+                false => dec!(0),
+            },
+        };
+
+        let [n, d] = [
+            Decimal::from(HexagonalGrid::cube_distance(
+                HexagonalGridCube2D::new(q0, r0, s0),
+                HexagonalGridCube2D::new(q1, r1, s1),
+            )),
+            Decimal::from((k0 - k1).abs()),
+        ]
+        .tap_mut(|values| {
+            values.sort();
+            values.reverse();
+        });
+        let nd0 = nd;
+
+        match diagonals {
+            GridDiagonalRule::Equidistant => c += n,
+            GridDiagonalRule::Exact | GridDiagonalRule::Approximate => c += n + (dec!(0.5) * d),
+            GridDiagonalRule::Rectilinear => c += n + d,
+            GridDiagonalRule::Alternating1 | GridDiagonalRule::Alternating2 => {
+                nd += d;
+                c += n + ((nd / dec!(2)).floor() - (nd0 / dec!(2)).floor());
+            }
+            GridDiagonalRule::Illegal => c += n + d,
+        };
+
+        c
+    }
+
     pub fn cube_round(
         q: impl Into<f64>,
         r: impl Into<f64>,
@@ -510,7 +555,7 @@ impl BaseGrid<HexagonalNode, TokenHexagonalShape> for HexagonalGrid {
             let d = if (n0.k == n1.k) || ((n0.q == n1.q) && (n0.r == n1.r) && (n0.s == n1.s)) {
                 dec!(1)
             } else {
-                match *GRID_DIAGONAL {
+                match self.diagonals {
                     GridDiagonalRule::Equidistant => dec!(1),
                     GridDiagonalRule::Exact | GridDiagonalRule::Approximate => dec!(1.5),
                     GridDiagonalRule::Rectilinear => dec!(2),
@@ -543,7 +588,7 @@ impl BaseGrid<HexagonalNode, TokenHexagonalShape> for HexagonalGrid {
     }
 
     fn get_adjacent_nodes(&self, HexagonalNode { q, r, s, k, d }: HexagonalNode) -> Vec<(HexagonalNode, Decimal)> {
-        match *GRID_DIAGONAL {
+        match self.diagonals {
             GridDiagonalRule::Equidistant => vec![
                 (HexagonalNode::new(q - 1, r, s + 1, k - 1, !d), dec!(1)),
                 (HexagonalNode::new(q - 1, r + 1, s, k - 1, !d), dec!(1)),
@@ -674,7 +719,7 @@ impl BaseGrid<HexagonalNode, TokenHexagonalShape> for HexagonalGrid {
 
         let HexagonalNode { q: mut q0, r: mut r0, s: mut s0, k: mut k0, d: d0 } = waypoints[0];
         let mut path = vec![HexagonalNode::new(q0, r0, s0, k0, d0)];
-        let diagonals = *GRID_DIAGONAL != GridDiagonalRule::Illegal;
+        let diagonals = self.diagonals != GridDiagonalRule::Illegal;
 
         for HexagonalNode { q: q1, r: r1, s: s1, k: k1, d: _ } in waypoints.into_iter().dropping(1) {
             if (q0 == q1) && (r0 == r1) && (k0 == k1) {
@@ -1009,7 +1054,7 @@ impl BaseGrid<HexagonalNode, TokenHexagonalShape> for HexagonalGrid {
 
         let mut c = dec!(0);
         let mut n0 = waypoints[0];
-        let mut nd = match *GRID_DIAGONAL {
+        let mut nd = match self.diagonals {
             GridDiagonalRule::Alternating2 => match n0.d {
                 true => dec!(0),
                 false => dec!(1),
@@ -1028,7 +1073,7 @@ impl BaseGrid<HexagonalNode, TokenHexagonalShape> for HexagonalGrid {
                 });
             let nd0 = nd;
 
-            match *GRID_DIAGONAL {
+            match self.diagonals {
                 GridDiagonalRule::Equidistant => c += n,
                 GridDiagonalRule::Exact | GridDiagonalRule::Approximate => c += n + (dec!(0.5) * d),
                 GridDiagonalRule::Rectilinear => c += n + d,
@@ -1100,7 +1145,7 @@ impl BaseGrid<HexagonalNode, TokenHexagonalShape> for HexagonalGrid {
         if d0 > 1 || d1 > 1 {
             false
         } else {
-            if *GRID_DIAGONAL == GridDiagonalRule::Illegal { d0 + d1 == 1 } else { d0 + d1 != 0 }
+            if self.diagonals == GridDiagonalRule::Illegal { d0 + d1 == 1 } else { d0 + d1 != 0 }
         }
     }
 
@@ -1110,7 +1155,7 @@ impl BaseGrid<HexagonalNode, TokenHexagonalShape> for HexagonalGrid {
         if d0 > 1 || d1 > 1 {
             false
         } else {
-            if *GRID_DIAGONAL == GridDiagonalRule::Illegal { false } else { d0 + d1 == 2 }
+            if self.diagonals == GridDiagonalRule::Illegal { false } else { d0 + d1 == 2 }
         }
     }
 }
@@ -1149,7 +1194,9 @@ impl AStar<HexagonalNode, TokenHexagonalShape> for HexagonalGrid {
                     false => self
                         .calculate_cost(*node, end_node, &token_shape, fog_manager, region_manager, wall_manager)
                         .into_iter()
-                        .chain(self.get_adjacent_nodes(*node).into_iter())
+                        .chain(self.get_adjacent_nodes(*node).into_iter().sorted_by_key(|(successor, _cost)| {
+                            HexagonalGrid::measure_distance(*successor, end_node, GridDiagonalRule::Rectilinear)
+                        }))
                         .filter(|(successor, _cost)| elevation_range.contains(successor.k))
                         .filter(|(successor, _cost)| {
                             scene_rect.contains(&Coord::from(self.get_node_center_point(*successor)))

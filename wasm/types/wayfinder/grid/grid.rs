@@ -35,7 +35,11 @@ impl Grid {
             }
             GridType::Square => {
                 let square_grid = base_grid.unchecked_ref::<JsSquareGrid>();
-                Grid::Square(SquareGrid { size: square_grid.size() as i32, distance: square_grid.distance() })
+                Grid::Square(SquareGrid {
+                    size: square_grid.size() as i32,
+                    distance: square_grid.distance(),
+                    diagonals: square_grid.diagonals(),
+                })
             }
             GridType::HexOddR | GridType::HexEvenR | GridType::HexOddQ | GridType::HexEvenQ => {
                 let hexagonal_grid = base_grid.unchecked_ref::<JsHexagonalGrid>();
@@ -46,6 +50,7 @@ impl Grid {
                     size_y: hexagonal_grid.size_y(),
                     columns: hexagonal_grid.columns(),
                     even: hexagonal_grid.even(),
+                    diagonals: hexagonal_grid.diagonals(),
                 })
             }
         }
