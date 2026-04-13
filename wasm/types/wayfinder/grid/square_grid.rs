@@ -72,6 +72,7 @@ impl BaseGrid<SquareNode, TokenSquareShape> for SquareGrid {
         from: SquareNode,
         to: SquareNode,
         token_shape: &TokenSquareShape,
+        level: &str,
         fog_manager: Option<&FogManager>,
         _region_manager: &RegionManager,
         wall_manager: &WallManager,
@@ -101,6 +102,7 @@ impl BaseGrid<SquareNode, TokenSquareShape> for SquareGrid {
                             .map(|offset| self.get_offset_center_point(offset).into()),
                     )
                     .collect(),
+                level,
             ) {
                 return None;
             }
@@ -712,6 +714,10 @@ impl AStar<SquareNode, TokenSquareShape> for SquareGrid {
         start_node.d = grid_measure_path_result.diagonals % 2 != 0;
 
         for end_waypoint in &waypoints[1..] {
+            if start_waypoint.level != end_waypoint.level {
+                break;
+            }
+
             let end_node = self.get_node(end_waypoint.create_elevated_point(), &token_shape);
             let elevation_range: ElevationRange<i32> =
                 ElevationRange::new(start_node.k.min(end_node.k), start_node.k.max(end_node.k));
@@ -720,7 +726,15 @@ impl AStar<SquareNode, TokenSquareShape> for SquareGrid {
                 &start_node,
                 |node| match cancellation_token.status() {
                     false => self
-                        .calculate_cost(*node, end_node, &token_shape, fog_manager, region_manager, wall_manager)
+                        .calculate_cost(
+                            *node,
+                            end_node,
+                            &token_shape,
+                            &start_waypoint.level,
+                            fog_manager,
+                            region_manager,
+                            wall_manager,
+                        )
                         .into_iter()
                         .chain(self.get_adjacent_nodes(*node).into_iter().sorted_by_key(|(successor, _cost)| {
                             SquareGrid::measure_distance(*successor, end_node, GridDiagonalRule::Rectilinear)
@@ -750,6 +764,7 @@ impl AStar<SquareNode, TokenSquareShape> for SquareGrid {
                                         .map(|offset| self.get_offset_center_point(offset).into()),
                                     )
                                     .collect(),
+                                &start_waypoint.level,
                             )
                         })
                         .collect(),

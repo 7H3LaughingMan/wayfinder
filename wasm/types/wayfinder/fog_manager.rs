@@ -17,7 +17,7 @@ pub struct FogManager {
 
 impl FogManager {
     pub fn new() -> Self {
-        let scene_rect: Rect = CANVAS.dimensions().unwrap().scene_rect().into();
+        let scene_rect: Rect = CANVAS.scene().unwrap().dimensions().scene_rect().into();
 
         let renderer = CANVAS.app().renderer();
         let gl = renderer.gl();

@@ -13,6 +13,7 @@ pub trait BaseGrid<N: Node, T: TokenShape> {
         from: N,
         to: N,
         token_shape: &T,
+        level: &str,
         fog_manager: Option<&FogManager>,
         region_manager: &RegionManager,
         wall_manager: &WallManager,

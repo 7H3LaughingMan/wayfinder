@@ -51,12 +51,12 @@ impl WallManager {
             .collect()
     }
 
-    pub fn check_collision(&self, start: Coord, end: Coord) -> bool {
+    pub fn check_collision(&self, start: Coord, end: Coord, level: &str) -> bool {
         let line = Line::new(start, end);
         let bounds = line.bounding_rect();
 
         for wall in self.tree.locate_in_envelope_intersecting(&AABB::from_corners(bounds.min(), bounds.max())) {
-            if wall.borrow().blocks_movement() {
+            if wall.borrow().included_in_level(level) && wall.borrow().blocks_movement() {
                 if wall.intersects(&line) {
                     return true;
                 }
@@ -66,9 +66,9 @@ impl WallManager {
         false
     }
 
-    pub fn check_collisions(&self, lines: Vec<(Coord, Coord)>) -> bool {
+    pub fn check_collisions(&self, lines: Vec<(Coord, Coord)>, level: &str) -> bool {
         for (start, end) in lines {
-            if self.check_collision(start, end) {
+            if self.check_collision(start, end, level) {
                 return true;
             }
         }

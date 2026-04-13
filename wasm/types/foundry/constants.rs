@@ -46,15 +46,15 @@ impl Default for TokenShapeType {
 #[wasm_bindgen(skip_typescript)]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(C)]
-pub enum WallDirection {
+pub enum EdgeDirection {
     Both = 0,
     Left = 1,
     Right = 2,
 }
 
-impl Default for WallDirection {
+impl Default for EdgeDirection {
     fn default() -> Self {
-        WallDirection::Both
+        EdgeDirection::Both
     }
 }
 
@@ -91,7 +91,7 @@ impl Default for WallDoorState {
 #[wasm_bindgen(skip_typescript)]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(C)]
-pub enum WallSenseType {
+pub enum EdgeSenseType {
     None = 0,
     Limited = 10,
     Normal = 20,
@@ -99,9 +99,9 @@ pub enum WallSenseType {
     Distance = 40,
 }
 
-impl Default for WallSenseType {
+impl Default for EdgeSenseType {
     fn default() -> Self {
-        WallSenseType::Normal
+        EdgeSenseType::Normal
     }
 }
 

@@ -3,17 +3,31 @@ use crate::types::{
     wayfinder::{Color, ElevatedPoint, ElevationRange},
 };
 use geo::{BoundingRect, Intersects, Line, MultiPolygon, Rect, unary_union};
+use std::collections::HashSet;
 
 #[derive(Clone, Debug)]
 pub struct RegionDocument {
     pub id: String,
     color: Color,
     elevation: ElevationRange,
+    levels: HashSet<String>,
     multi_polygon: MultiPolygon,
     bounds: Rect,
 }
 
 impl RegionDocument {
+    pub fn new(
+        id: String,
+        color: Color,
+        elevation: ElevationRange,
+        levels: HashSet<String>,
+        multi_polygon: MultiPolygon,
+    ) -> Self {
+        let bounds = multi_polygon.bounding_rect().unwrap_or(Rect::new((0.0, 0.0), (0.0, 0.0)));
+
+        RegionDocument { id, color, elevation, levels, multi_polygon, bounds }
+    }
+
     pub fn color(&self) -> Color {
         self.color.clone()
     }
@@ -25,16 +39,13 @@ impl RegionDocument {
 
 impl From<JsRegionDocument> for RegionDocument {
     fn from(value: JsRegionDocument) -> Self {
-        let multi_polygon = unary_union(&value.triangulation().to_polygons());
-        let bounds = multi_polygon.bounding_rect().unwrap_or(Rect::new((0.0, 0.0), (0.0, 0.0)));
-
-        RegionDocument {
-            id: value.id(),
-            color: value.color().into(),
-            elevation: value.elevation().into(),
-            multi_polygon,
-            bounds,
-        }
+        RegionDocument::new(
+            value.id(),
+            value.color().into(),
+            value.elevation().into(),
+            value.levels().values().into_iter().flatten().map(String::from).collect(),
+            unary_union(&value.triangulation().to_polygons()),
+        )
     }
 }
 

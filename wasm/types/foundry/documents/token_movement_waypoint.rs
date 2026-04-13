@@ -4,7 +4,7 @@ use wasm_bindgen::prelude::*;
 #[wasm_bindgen]
 extern "C" {
     #[derive(Clone, Debug)]
-    #[wasm_bindgen(typescript_type = "foundry.documents.TokenMovementWaypoint")]
+    #[wasm_bindgen(typescript_type = "TokenMovementWaypoint")]
     pub type JsTokenMovementWaypoint;
 
     #[wasm_bindgen(method, getter)]
@@ -23,7 +23,13 @@ extern "C" {
     pub fn height(this: &JsTokenMovementWaypoint) -> f64;
 
     #[wasm_bindgen(method, getter)]
+    pub fn depth(this: &JsTokenMovementWaypoint) -> f64;
+
+    #[wasm_bindgen(method, getter)]
     pub fn shape(this: &JsTokenMovementWaypoint) -> TokenShapeType;
+
+    #[wasm_bindgen(method, getter)]
+    pub fn level(this: &JsTokenMovementWaypoint) -> String;
 
     #[wasm_bindgen(method, getter)]
     pub fn action(this: &JsTokenMovementWaypoint) -> String;
@@ -46,7 +52,9 @@ impl From<TokenMovementWaypoint> for JsTokenMovementWaypoint {
             .set("elevation", value.elevation)
             .set("width", value.width)
             .set("height", value.height)
+            .set("depth", value.depth)
             .set("shape", value.shape)
+            .set("level", value.level)
             .set("action", value.action)
             .set("snapped", value.snapped)
             .set("explicit", value.explicit)

@@ -1,9 +1,15 @@
+use crate::types::{
+    foundry::{EdgeDirection, EdgeSenseType, WallDoorState, WallDoorType, WallMovementType},
+    helpers::JsObject,
+};
 use base64::{Engine, prelude::BASE64_STANDARD};
+use js_sys::{Array, ArrayTuple, Number};
 use knossos::maze::{Cell, Eller, OrthogonalMazeBuilder};
 use svg::{
     Document,
     node::element::{Path, path::Data},
 };
+use wasm_bindgen::JsValue;
 
 const SCENE_SCALE: f64 = 100.0;
 
@@ -80,5 +86,74 @@ impl Scene {
             walls,
             svg: format!("data:image/svg+xml;base64,{}", BASE64_STANDARD.encode(svg.to_string())),
         }
+    }
+
+    pub fn to_object(&self) -> JsObject {
+        JsObject::new()
+            .set("name", "Maze")
+            .set(
+                "background",
+                JsObject::new()
+                    .set("src", self.svg.clone())
+                    .set("anchorX", 0)
+                    .set("anchorY", 0)
+                    .set("offsetX", 0)
+                    .set("offsetY", 0)
+                    .set("fit", "fill")
+                    .set("scaleX", 1)
+                    .set("scaleY", 1)
+                    .set("rotation", 0)
+                    .set("tint", "#ffffff")
+                    .set("alphaThreshold", 0),
+            )
+            .set("width", self.width)
+            .set("height", self.height)
+            .set("padding", 0)
+            .set(
+                "grid",
+                JsObject::new()
+                    .set("type", 1)
+                    .set("size", 100)
+                    .set("style", "solidLines")
+                    .set("thickness", 1)
+                    .set("color", "#000000")
+                    .set("alpha", 0.2)
+                    .set("distance", 5)
+                    .set("units", "ft"),
+            )
+            .set("tokenVision", false)
+            .set(
+                "fog",
+                JsObject::new()
+                    .set("exploration", false)
+                    .set("overlay", JsValue::null())
+                    .set("colors", JsObject::new().set("explored", JsValue::null()).set("unexplored", JsValue::null())),
+            )
+            .set(
+                "walls",
+                self.walls
+                    .iter()
+                    .map(|wall| {
+                        JsObject::new()
+                            .set(
+                                "c",
+                                ArrayTuple::new4(
+                                    &Number::from(wall.start.x),
+                                    &Number::from(wall.start.y),
+                                    &Number::from(wall.end.x),
+                                    &Number::from(wall.end.y),
+                                ),
+                            )
+                            .set("light", EdgeSenseType::Normal)
+                            .set("move", WallMovementType::Normal)
+                            .set("sight", EdgeSenseType::Normal)
+                            .set("sound", EdgeSenseType::Normal)
+                            .set("dir", EdgeDirection::Both)
+                            .set("door", WallDoorType::None)
+                            .set("ds", WallDoorState::Closed)
+                            .clone()
+                    })
+                    .collect::<Array>(),
+            )
     }
 }

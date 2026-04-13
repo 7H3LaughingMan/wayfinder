@@ -1,15 +1,19 @@
 use crate::{
     CANVAS,
     exports::CancellationToken,
+    log,
     types::{
         foundry::{
-            JsTokenFindMovementPathWaypoint,
-            documents::{JsRegionDocument, JsScene, JsTokenDocument, JsTokenMovementWaypoint, JsWallDocument},
+            documents::{
+                JsPartialTokenMovementWaypoint, JsRegionDocument, JsTokenDocument, JsTokenMovementWaypoint,
+                JsWallDocument,
+            },
             grid::JsGridMeasurePathResult,
         },
+        helpers::JsObject,
         wayfinder::{
-            FogManager, GridMeasurePathResult, RegionDocument, RegionManager, Scene, TokenDocument,
-            TokenFindMovementPathWaypoint, TokenMovementWaypoint, WallDocument, WallManager, grid::Grid,
+            FogManager, GridMeasurePathResult, PartialTokenMovementWaypoint, RegionManager, Scene, TokenDocument,
+            TokenMovementWaypoint, WallManager, grid::Grid,
         },
     },
 };
@@ -31,12 +35,12 @@ pub struct Wayfinder {
 impl Wayfinder {
     #[wasm_bindgen(constructor)]
     pub fn new() -> Wayfinder {
-        let scene_rect = CANVAS.dimensions().unwrap().scene_rect().into();
+        let scene_rect = CANVAS.scene().unwrap().dimensions().scene_rect().into();
         let grid = Grid::new();
         let region_documents =
-            CANVAS.regions().placeables().iter().map(|region| RegionDocument::from(region.document())).collect();
+            CANVAS.scene().unwrap().regions().values().into_iter().flatten().map(JsRegionDocument::into).collect();
         let wall_documents =
-            CANVAS.walls().placeables().iter().map(|wall| WallDocument::from(wall.document())).collect();
+            CANVAS.scene().unwrap().walls().values().into_iter().flatten().map(JsWallDocument::into).collect();
 
         Wayfinder {
             scene_rect,
@@ -47,14 +51,19 @@ impl Wayfinder {
         }
     }
 
+    #[wasm_bindgen]
+    pub fn debug(&self) {
+        log!("{self:#?}");
+    }
+
     #[wasm_bindgen(js_name = updateFog)]
     pub fn update_fog(&mut self) {
         self.fog_manager = FogManager::new();
     }
 
     #[wasm_bindgen(js_name = generateMaze)]
-    pub fn generate_maze(&self, width: usize, height: usize) -> JsScene {
-        Scene::new(width.min(50), height.min(50)).into()
+    pub fn generate_maze(&self, width: usize, height: usize) -> JsObject {
+        Scene::new(width.min(50), height.min(50)).to_object()
     }
 
     #[wasm_bindgen(js_name = addRegion)]
@@ -87,18 +96,18 @@ impl Wayfinder {
         self.wall_manager.update_wall(wall_document.into());
     }
 
-    #[wasm_bindgen(js_name = findMovementPath, unchecked_return_type = "foundry.documents.TokenMovementWaypoint[] | null")]
+    #[wasm_bindgen(js_name = findMovementPath, unchecked_return_type = "TokenMovementWaypoint[] | null")]
     pub async fn find_movement_path(
         &self,
         cancellation_token: &CancellationToken,
         token_document: JsTokenDocument,
-        waypoints: Vec<JsTokenFindMovementPathWaypoint>,
+        waypoints: Vec<JsPartialTokenMovementWaypoint>,
         use_exploration: bool,
         grid_measure_path_result: JsGridMeasurePathResult,
     ) -> JsValue {
         let token_document: TokenDocument = token_document.into();
-        let waypoints: Vec<TokenFindMovementPathWaypoint> =
-            waypoints.into_iter().map(TokenFindMovementPathWaypoint::from).collect();
+        let waypoints: Vec<PartialTokenMovementWaypoint> =
+            waypoints.into_iter().map(PartialTokenMovementWaypoint::from).collect();
         let grid_measure_path_result: GridMeasurePathResult = grid_measure_path_result.into();
 
         let mut new_waypoints: Vec<TokenMovementWaypoint> = Vec::new();

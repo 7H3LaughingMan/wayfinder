@@ -1,5 +1,5 @@
-use crate::types::foundry::{WallDirection, WallDoorState, WallDoorType, WallMovementType, WallSenseType};
-use js_sys::{ArrayTuple, Number, Object};
+use crate::types::foundry::{EdgeDirection, EdgeSenseType, WallDoorState, WallDoorType, WallMovementType};
+use js_sys::{ArrayTuple, JsString, Number, Object, Set};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -20,19 +20,22 @@ extern "C" {
     pub fn c(this: &JsWallDocument) -> ArrayTuple<(Number, Number, Number, Number)>;
 
     #[wasm_bindgen(method, getter)]
-    pub fn light(this: &JsWallDocument) -> WallSenseType;
+    pub fn levels(this: &JsWallDocument) -> Set<JsString>;
+
+    #[wasm_bindgen(method, getter)]
+    pub fn light(this: &JsWallDocument) -> EdgeSenseType;
 
     #[wasm_bindgen(method, getter)]
     pub fn r#move(this: &JsWallDocument) -> WallMovementType;
 
     #[wasm_bindgen(method, getter)]
-    pub fn sight(this: &JsWallDocument) -> WallSenseType;
+    pub fn sight(this: &JsWallDocument) -> EdgeSenseType;
 
     #[wasm_bindgen(method, getter)]
-    pub fn sound(this: &JsWallDocument) -> WallSenseType;
+    pub fn sound(this: &JsWallDocument) -> EdgeSenseType;
 
     #[wasm_bindgen(method, getter)]
-    pub fn dir(this: &JsWallDocument) -> WallDirection;
+    pub fn dir(this: &JsWallDocument) -> EdgeDirection;
 
     #[wasm_bindgen(method, getter)]
     pub fn door(this: &JsWallDocument) -> WallDoorType;

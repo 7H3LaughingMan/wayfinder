@@ -10,7 +10,9 @@ pub struct TokenDocument {
     pub elevation: f64,
     pub width: f64,
     pub height: f64,
+    pub depth: f64,
     pub shape: TokenShapeType,
+    pub level: String,
     pub movement_action: String,
 }
 
@@ -22,7 +24,9 @@ impl TokenDocument {
             elevation: self.elevation,
             width: self.width,
             height: self.height,
+            depth: self.depth,
             shape: self.shape,
+            level: self.level.clone(),
             action: self.movement_action.clone(),
             snapped: false,
             explicit: false,
@@ -39,7 +43,9 @@ impl From<JsTokenDocument> for TokenDocument {
             elevation: value.elevation(),
             width: value.width(),
             height: value.height(),
+            depth: value.depth(),
             shape: value.shape(),
+            level: value.level(),
             movement_action: value.movement_action(),
         }
     }

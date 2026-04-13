@@ -26,7 +26,7 @@ pub enum Grid {
 
 impl Grid {
     pub fn new() -> Self {
-        let base_grid = CANVAS.grid().unwrap();
+        let base_grid = CANVAS.scene().unwrap().grid();
 
         match base_grid.r#type() {
             GridType::Gridless => {

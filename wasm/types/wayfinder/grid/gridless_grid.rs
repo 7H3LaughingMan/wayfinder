@@ -23,6 +23,7 @@ impl BaseGrid<GridlessNode, TokenSquareShape> for GridlessGrid {
         _from: GridlessNode,
         _to: GridlessNode,
         _token_shape: &TokenSquareShape,
+        _level: &str,
         _fog_manager: Option<&FogManager>,
         _region_manager: &RegionManager,
         _wall_manager: &WallManager,
