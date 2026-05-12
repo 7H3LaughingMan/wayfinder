@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [14.0.1] - 2026-05-12
+
+### Fixed
+
+- If a wall is not assigned to any level it will now count as being on all levels which is intended according to Foundry.
+
 ## [14.0.0] - 2026-04-13
 
 This is an update to add support for Foundry Version 14, there is no backwards compatibility. One thing to note is that Foundry doesn't provide a means to drag a token from one level to another, it has to be done either through regions or manually changing which level a token is on. It is possible to control tokens on another level and Wayfinder will make sure that those tokens avoid walls on their level. However, Fog Exploration is only available for the currently active level so if you are restricting movement based on it then tokens on another level will not be able to move into areas that are explored on their level that aren't explored on the active level.
@@ -157,6 +163,7 @@ Foundry Virtual Tabletop - Version 13 Support!
 - Fixed a problem with checking fog exploration where it was slightly off when checking pixels
 - Improved Fog Exploration
 
+[14.0.1]: https://github.com/7H3LaughingMan/wayfinder/compare/v14.0.0...v14.0.1
 [14.0.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v13.1.1...v14.0.0
 [13.1.1]: https://github.com/7H3LaughingMan/wayfinder/compare/v13.1.0...v13.1.1
 [13.1.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v13.0.3...v13.1.0

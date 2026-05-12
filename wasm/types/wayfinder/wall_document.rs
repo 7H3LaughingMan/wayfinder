@@ -60,7 +60,7 @@ impl WallDocument {
     }
 
     pub fn included_in_level(&self, level: &str) -> bool {
-        self.levels.contains(level)
+        if self.levels.len() == 0 { true } else { self.levels.contains(level) }
     }
 }
 
