@@ -155,6 +155,15 @@ impl BaseGrid<SquareNode, TokenSquareShape> for SquareGrid {
         SquareNode { i, j, k, d: false }
     }
 
+    fn convert_point_to_node(&self, ElevatedPoint { x, y, elevation }: ElevatedPoint) -> SquareNode {
+        SquareNode {
+            j: (y / (self.size as f64)).floor() as i32,
+            i: (x / (self.size as f64)).floor() as i32,
+            k: (elevation / self.distance + crate::EPSILON).floor() as i32,
+            d: false,
+        }
+    }
+
     fn get_adjacent_nodes(&self, SquareNode { i, j, k, d }: SquareNode) -> Vec<(SquareNode, Decimal)> {
         match self.diagonals {
             GridDiagonalRule::Equidistant => vec![

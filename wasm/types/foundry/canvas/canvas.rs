@@ -4,7 +4,7 @@ use crate::types::{
         canvas::{layers::JsControlsLayer, perception::JsFogManager},
         documents::JsScene,
     },
-    pixi::JsApplication,
+    pixi::{JsApplication, JsRenderTexture},
 };
 use js_sys::Object;
 use wasm_bindgen::prelude::*;
@@ -34,4 +34,7 @@ extern "C" {
 
     #[wasm_bindgen(method)]
     pub async fn ping(this: &JsCanvas, origin: JsPoint);
+
+    #[wasm_bindgen(static_method_of = JsCanvas, js_namespace = ["foundry", "canvas"], js_class = "Canvas", js_name = "getRenderTexture")]
+    pub fn get_render_texture(options: JsValue) -> JsRenderTexture;
 }

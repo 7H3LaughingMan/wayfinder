@@ -1,6 +1,9 @@
-use crate::types::{
-    foundry::documents::JsRegionDocument,
-    wayfinder::{Color, ElevatedPoint, ElevationRange},
+use crate::{
+    log,
+    types::{
+        foundry::documents::JsRegionDocument,
+        wayfinder::{Color, ElevatedPoint, ElevationRange},
+    },
 };
 use geo::{BoundingRect, Intersects, Line, MultiPolygon, Rect, unary_union};
 use std::collections::HashSet;
@@ -39,6 +42,18 @@ impl RegionDocument {
 
 impl From<JsRegionDocument> for RegionDocument {
     fn from(value: JsRegionDocument) -> Self {
+        let behaviors = value.behaviors();
+
+        for behavior in behaviors.values().into_iter().flatten() {
+            log!(
+                "id - {}, name - {}, type - {}, disabled - {}",
+                behavior.id(),
+                behavior.name(),
+                behavior.r#type(),
+                behavior.disabled()
+            );
+        }
+
         RegionDocument::new(
             value.id(),
             value.color().into(),

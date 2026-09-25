@@ -75,6 +75,12 @@ impl ElevatedPoint {
     }
 }
 
+impl From<JsPoint> for ElevatedPoint {
+    fn from(value: JsPoint) -> Self {
+        ElevatedPoint { x: value.x(), y: value.y(), elevation: 0.0 }
+    }
+}
+
 impl From<JsElevatedPoint> for ElevatedPoint {
     fn from(value: JsElevatedPoint) -> Self {
         ElevatedPoint { x: value.x(), y: value.y(), elevation: value.elevation() }

@@ -21,6 +21,7 @@ getrandom_v3 = { version = "0.3", features = [
 
 [dependencies]
 base64 = "0.22.1"
+bitvec = "1.1.1"
 console_error_panic_hook = "0.1.7"
 futures = "0.3.32"
 geo = "0.32.0"

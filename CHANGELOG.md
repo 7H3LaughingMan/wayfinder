@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [14.1.0] - 2026-09-25
+
+### Changed
+
+- Reworked how fog exploration is handled to improve performance
+  - Previously this worked by creating a texture of the fog exploration texture that is 25% the size of the map, extracting the pixels, but since it returned RGBA data it then had to be further processed to only extract the red pixel data since that is what is used by Foundry. On a large map such as 36,000 x 48,000 it was generating a 9,000 x 12,000 texture, extracting the pixels, and processing them which was taking around 800 ms.
+  - The texture that Wayfinder created is now the same size as Foundry's fog exploration texture which is scaled down so the maximum width/height is 4,096 pixels, so a 36,000 x 48,000 map used a fog exploration texture of 3,072 x 4,096. (Which means previously Wayfinder was upscaling the 3,072 x 4,096 texture to 9,000 x 12,000 which was a waste.) This texture also only has the red channel so when the pixels are extracted there is only red pixel data which means it doesn't need to be processed further. With these improvements updating the fog exploration data stored by Wayfinder now only takes 6.354 ms for the 36,000 x 48,000 map. The only downside is when it comes to smaller maps such as a 2,000 x 1,500 map it went from 1.75 ms to 3.878 ms since it's now processing a texture that is 2,000 x 1,500 instead of 500 x 375, but I figure keeping the texture that is used by Wayfinder as the same size as Foundry's fog exploration texture is better.
+
 ## [14.0.1] - 2026-05-12
 
 ### Fixed
@@ -163,6 +171,7 @@ Foundry Virtual Tabletop - Version 13 Support!
 - Fixed a problem with checking fog exploration where it was slightly off when checking pixels
 - Improved Fog Exploration
 
+[14.1.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v14.0.1...v14.1.0
 [14.0.1]: https://github.com/7H3LaughingMan/wayfinder/compare/v14.0.0...v14.0.1
 [14.0.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v13.1.1...v14.0.0
 [13.1.1]: https://github.com/7H3LaughingMan/wayfinder/compare/v13.1.0...v13.1.1

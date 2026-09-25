@@ -22,7 +22,12 @@ extern "C" {
     #[wasm_bindgen(method, getter)]
     pub fn gl(this: &JsRenderer) -> WebGl2RenderingContext;
 
-    /// Useful function that returns a texture of the display object that can then be used to create sprites This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
+    /// Useful function that returns a texture of the display object that can then be used to create sprites
+    /// This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
     #[wasm_bindgen(method, js_name = generateTexture)]
     pub fn generate_texture(this: &JsRenderer, display_object: JsValue, options: JsValue) -> JsRenderTexture;
+
+    /// Renders the object to its WebGL view.
+    #[wasm_bindgen(method)]
+    pub fn render(this: &JsRenderer, display_object: JsValue, options: JsValue);
 }

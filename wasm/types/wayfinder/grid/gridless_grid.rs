@@ -39,6 +39,14 @@ impl BaseGrid<GridlessNode, TokenSquareShape> for GridlessGrid {
         GridlessNode { i, j, k }
     }
 
+    fn convert_point_to_node(&self, ElevatedPoint { x, y, elevation }: ElevatedPoint) -> GridlessNode {
+        GridlessNode {
+            i: y.floor() as i32,
+            j: x.floor() as i32,
+            k: ((elevation / self.distance) * (self.size as f64) + crate::EPSILON).floor() as i32,
+        }
+    }
+
     fn get_adjacent_nodes(&self, _node: GridlessNode) -> Vec<(GridlessNode, Decimal)> {
         Vec::new()
     }

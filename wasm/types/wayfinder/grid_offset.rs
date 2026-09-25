@@ -30,6 +30,12 @@ impl From<JsGridOffset2D> for GridOffset2D {
     }
 }
 
+impl From<JsGridOffset3D> for GridOffset2D {
+    fn from(value: JsGridOffset3D) -> Self {
+        GridOffset2D { i: value.i() as i32, j: value.j() as i32 }
+    }
+}
+
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 pub struct GridOffset3D {
     pub i: i32,
@@ -58,6 +64,12 @@ impl Ord for GridOffset3D {
             },
             ord => ord,
         }
+    }
+}
+
+impl From<JsGridOffset2D> for GridOffset3D {
+    fn from(value: JsGridOffset2D) -> Self {
+        GridOffset3D { i: value.i() as i32, j: value.j() as i32, k: 0 }
     }
 }
 

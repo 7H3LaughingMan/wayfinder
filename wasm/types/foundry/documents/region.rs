@@ -1,7 +1,7 @@
-use crate::types::foundry::utils::JsColor;
+use crate::types::foundry::{documents::JsRegionBehavior, utils::JsColor};
 use geo::{Polygon, Triangle};
 use itertools::Itertools;
-use js_sys::{Float32Array, JsString, Object, Set, Uint16Array, Uint32Array};
+use js_sys::{Float32Array, JsString, Map, Object, Set, Uint16Array, Uint32Array};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -26,6 +26,9 @@ extern "C" {
 
     #[wasm_bindgen(method, getter)]
     pub fn levels(this: &JsRegionDocument) -> Set<JsString>;
+
+    #[wasm_bindgen(method, getter)]
+    pub fn behaviors(this: &JsRegionDocument) -> Map<JsString, JsRegionBehavior>;
 
     #[wasm_bindgen(method, getter)]
     pub fn triangulation(this: &JsRegionDocument) -> JsRegionTriangulation;

@@ -63,7 +63,7 @@ impl Wayfinder {
 
     #[wasm_bindgen(js_name = generateMaze)]
     pub fn generate_maze(&self, width: usize, height: usize) -> JsObject {
-        Scene::new(width.min(50), height.min(50)).to_object()
+        Scene::new(width.min(500), height.min(500)).to_object()
     }
 
     #[wasm_bindgen(js_name = addRegion)]

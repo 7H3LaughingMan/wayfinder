@@ -112,11 +112,11 @@ impl HexagonalGrid {
         y /= self.size as f64;
 
         if self.columns {
-            q = 2.0 * crate::SQRT1_3 * x - 2.0 / 3.0;
-            r = -0.5 * (q + (if self.even { 1.0 } else { 0.0 })) + y;
+            q = ((2.0 * crate::SQRT1_3) * x) - (2.0 / 3.0);
+            r = (-0.5 * (q + (if self.even { 1.0 } else { 0.0 }))) + y;
         } else {
-            r = 2.0 * crate::SQRT1_3 * y - 2.0 / 3.0;
-            q = -0.5 * (r + (if self.even { 1.0 } else { 0.0 })) + x;
+            r = ((2.0 * crate::SQRT1_3) * y) - (2.0 / 3.0);
+            q = (-0.5 * (r + (if self.even { 1.0 } else { 0.0 }))) + x;
         }
 
         HexagonalGrid::cube_round(q, r, 0.0 - q - r, elevation / self.distance)
@@ -152,7 +152,7 @@ impl HexagonalGrid {
 
     pub fn cube_to_offset(&self, HexagonalGridCube3D { q, r, s: _, k }: HexagonalGridCube3D) -> GridOffset3D {
         if self.columns {
-            GridOffset3D { i: q, j: r + ((q + (if self.even { 1 } else { -1 }) * (q & 1)) >> 1), k }
+            GridOffset3D { j: q, i: r + ((q + (if self.even { 1 } else { -1 }) * (q & 1)) >> 1), k }
         } else {
             GridOffset3D { i: r, j: q + ((r + (if self.even { 1 } else { -1 }) * (r & 1)) >> 1), k }
         }
@@ -587,6 +587,10 @@ impl BaseGrid<HexagonalNode, TokenHexagonalShape> for HexagonalGrid {
     fn convert_offset_to_node(&self, GridOffset3D { i, j, k }: GridOffset3D) -> HexagonalNode {
         let HexagonalGridCube3D { q, r, s, k } = self.offset_to_cube(GridOffset3D { i, j, k });
         HexagonalNode { q, r, s, k, d: false }
+    }
+
+    fn convert_point_to_node(&self, point: ElevatedPoint) -> HexagonalNode {
+        self.point_to_cube(point).into()
     }
 
     fn get_adjacent_nodes(&self, HexagonalNode { q, r, s, k, d }: HexagonalNode) -> Vec<(HexagonalNode, Decimal)> {

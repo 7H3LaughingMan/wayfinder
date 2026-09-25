@@ -1,4 +1,7 @@
-use crate::types::{helpers::JsObject, wayfinder::GridOffset3D};
+use crate::types::{
+    helpers::JsObject,
+    wayfinder::{GridOffset2D, GridOffset3D},
+};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -15,6 +18,12 @@ extern "C" {
 
     #[wasm_bindgen(method, getter)]
     pub fn k(this: &JsGridOffset3D) -> f64;
+}
+
+impl From<GridOffset2D> for JsGridOffset3D {
+    fn from(GridOffset2D { i, j }: GridOffset2D) -> Self {
+        JsObject::new().set("i", i).set("j", j).set("k", 0).unchecked_into()
+    }
 }
 
 impl From<GridOffset3D> for JsGridOffset3D {

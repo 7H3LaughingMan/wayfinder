@@ -13,6 +13,9 @@ extern "C" {
     )]
     pub type JsRenderTexture;
 
+    #[wasm_bindgen(method)]
+    pub fn destroy(this: &JsRenderTexture, destroy_base: Option<bool>);
+
     #[wasm_bindgen(method, getter)]
     pub fn frame(this: &JsRenderTexture) -> JsRectangle;
 

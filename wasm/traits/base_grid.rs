@@ -20,6 +20,7 @@ pub trait BaseGrid<N: Node, T: TokenShape> {
     ) -> Option<(N, Decimal)>;
     fn convert_node_to_offset(&self, node: N) -> GridOffset3D;
     fn convert_offset_to_node(&self, offset: GridOffset3D) -> N;
+    fn convert_point_to_node(&self, point: ElevatedPoint) -> N;
     fn get_adjacent_nodes(&self, node: N) -> Vec<(N, Decimal)>;
     fn get_direct_path(&self, waypoints: Vec<N>) -> Vec<N>;
     fn get_node(&self, point: ElevatedPoint, token_shape: &T) -> N;
