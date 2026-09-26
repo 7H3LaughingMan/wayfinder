@@ -1,6 +1,6 @@
 use crate::{
     CANVAS,
-    types::{foundry::canvas::JsCanvas, helpers::JsObject, wayfinder::Point},
+    types::{foundry::canvas::JsCanvas, helpers::JsObject, pixi::JsMatrix, wayfinder::Point},
 };
 use geo::{Contains, Coord, Rect};
 use std::fmt::Debug;
@@ -33,7 +33,16 @@ impl FogManager {
                 .set("textureConfiguration", CANVAS.fog().texture_configuration())
                 .into(),
         );
-        renderer.render(CANVAS.fog().sprite().into(), JsObject::new().set("renderTexture", &render_texture).into());
+        renderer.render(
+            CANVAS.fog().sprite().into(),
+            JsObject::new()
+                .set("renderTexture", &render_texture)
+                .set(
+                    "transform",
+                    JsMatrix::new(1.0, 0.0, 0.0, 1.0, -CANVAS.fog().sprite().x(), -CANVAS.fog().sprite().y()),
+                )
+                .into(),
+        );
 
         let framebuffer = render_texture.framebuffer();
         let gl_framebuffer = framebuffer.gl_framebuffers().get(renderer.CONTEXT_UID()).unwrap();
@@ -42,7 +51,7 @@ impl FogManager {
         let resolution = render_texture.resolution();
         let width = framebuffer.width() as i32;
         let height = framebuffer.height() as i32;
-        let mut pixels = vec![0_u8; (framebuffer.width() * framebuffer.height()) as usize];
+        let mut pixels = vec![0_u8; (width * height) as usize];
 
         gl.bind_framebuffer(WebGl2RenderingContext::FRAMEBUFFER, Option::Some(&gl_framebuffer.framebuffer()));
 

@@ -799,7 +799,7 @@ impl BaseGrid<HexagonalNode, TokenHexagonalShape> for HexagonalGrid {
                         path.push(HexagonalGrid::cube_round(q, r, s, k).into());
                     }
                 } else {
-                    let dk1 = (k0 - k1).abs().min(1);
+                    let dk1 = (k0 - k1).abs().max(1);
                     let mut tc = dk1;
                     let mut tk = n;
 

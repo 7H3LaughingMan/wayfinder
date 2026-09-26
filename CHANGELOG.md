@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [14.1.1] - 2026-09-26
+
+### Fixed
+
+- When rendering the fog sprite texture make sure we "translate" it so that we remove padding
+- Make sure we can actually find a "direct path" when calculating a path between two points when diagonal movement is illegal
+
 ## [14.1.0] - 2026-09-25
 
 ### Changed
@@ -171,6 +178,7 @@ Foundry Virtual Tabletop - Version 13 Support!
 - Fixed a problem with checking fog exploration where it was slightly off when checking pixels
 - Improved Fog Exploration
 
+[14.1.1]: https://github.com/7H3LaughingMan/wayfinder/compare/v14.1.0...v14.1.1
 [14.1.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v14.0.1...v14.1.0
 [14.0.1]: https://github.com/7H3LaughingMan/wayfinder/compare/v14.0.0...v14.0.1
 [14.0.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v13.1.1...v14.0.0

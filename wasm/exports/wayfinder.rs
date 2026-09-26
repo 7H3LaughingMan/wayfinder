@@ -4,6 +4,7 @@ use crate::{
     log,
     types::{
         foundry::{
+            JsPoint,
             documents::{
                 JsPartialTokenMovementWaypoint, JsRegionDocument, JsTokenDocument, JsTokenMovementWaypoint,
                 JsWallDocument,
@@ -54,6 +55,11 @@ impl Wayfinder {
     #[wasm_bindgen]
     pub fn debug(&self) {
         log!("{self:#?}");
+    }
+
+    #[wasm_bindgen(js_name = isPointExplored)]
+    pub fn is_point_explored(&mut self, point: JsPoint) -> bool {
+        self.fog_manager.is_point_explored(point.into())
     }
 
     #[wasm_bindgen(js_name = updateFog)]

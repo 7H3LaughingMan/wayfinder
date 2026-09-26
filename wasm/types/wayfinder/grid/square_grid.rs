@@ -420,9 +420,9 @@ impl BaseGrid<SquareNode, TokenSquareShape> for SquareGrid {
                     }
                 }
             } else {
-                let di1 = di.min(1);
-                let dj1 = dj.min(1);
-                let dk1 = dk.min(1);
+                let di1 = di.max(1);
+                let dj1 = dj.max(1);
+                let dk1 = dk.max(1);
                 let tdi = dj1 * dk1;
                 let tdj = di1 * dk1;
                 let tdk = di1 * dj1;
@@ -472,7 +472,6 @@ impl BaseGrid<SquareNode, TokenSquareShape> for SquareGrid {
                 }
             }
         }
-
         path
     }
 
