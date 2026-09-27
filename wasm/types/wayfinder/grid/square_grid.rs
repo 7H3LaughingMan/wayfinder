@@ -745,7 +745,9 @@ impl AStar<SquareNode, TokenSquareShape> for SquareGrid {
                         )
                         .into_iter()
                         .chain(self.get_adjacent_nodes(*node).into_iter().sorted_by_key(|(successor, _cost)| {
-                            SquareGrid::measure_distance(*successor, end_node, GridDiagonalRule::Rectilinear)
+                            (successor.i - end_node.i).abs()
+                                + (successor.j - end_node.j).abs()
+                                + (successor.k - end_node.k).abs()
                         }))
                         .filter(|(successor, _cost)| elevation_range.contains(successor.k))
                         .filter(|(successor, _cost)| {

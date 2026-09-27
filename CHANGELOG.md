@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [14.1.2] - 2026-09-27
+
+### Changed
+
+- Optimized some sorting by simplifying some code which results in increased performance, thanks [fotoply](https://github.com/fotoply)!
+
 ## [14.1.1] - 2026-09-26
 
 ### Fixed
@@ -178,6 +184,7 @@ Foundry Virtual Tabletop - Version 13 Support!
 - Fixed a problem with checking fog exploration where it was slightly off when checking pixels
 - Improved Fog Exploration
 
+[14.1.2]: https://github.com/7H3LaughingMan/wayfinder/compare/v14.1.1...v14.1.2
 [14.1.1]: https://github.com/7H3LaughingMan/wayfinder/compare/v14.1.0...v14.1.1
 [14.1.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v14.0.1...v14.1.0
 [14.0.1]: https://github.com/7H3LaughingMan/wayfinder/compare/v14.0.0...v14.0.1

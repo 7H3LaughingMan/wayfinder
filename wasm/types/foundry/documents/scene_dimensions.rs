@@ -41,9 +41,6 @@ extern "C" {
     pub fn distance_pixels(this: &JsSceneDimensions) -> f64;
 
     #[wasm_bindgen(method, getter)]
-    pub fn units(this: &JsSceneDimensions) -> String;
-
-    #[wasm_bindgen(method, getter)]
     pub fn ratio(this: &JsSceneDimensions) -> f64;
 
     #[wasm_bindgen(method, getter = maxR)]
