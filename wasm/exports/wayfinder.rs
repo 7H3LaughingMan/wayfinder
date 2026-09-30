@@ -4,16 +4,14 @@ use crate::{
     log,
     types::{
         foundry::{
-            JsPoint,
             documents::{
                 JsPartialTokenMovementWaypoint, JsRegionDocument, JsTokenDocument, JsTokenMovementWaypoint,
                 JsWallDocument,
             },
-            grid::JsGridMeasurePathResult,
+            grid::{JsGridMeasurePathResult, JsGridOffset2D},
         },
-        helpers::JsObject,
         wayfinder::{
-            FogManager, GridMeasurePathResult, PartialTokenMovementWaypoint, RegionManager, Scene, TokenDocument,
+            FogManager, GridMeasurePathResult, PartialTokenMovementWaypoint, RegionManager, TokenDocument,
             TokenMovementWaypoint, WallManager, grid::Grid,
         },
     },
@@ -57,19 +55,14 @@ impl Wayfinder {
         log!("{self:#?}");
     }
 
-    #[wasm_bindgen(js_name = isPointExplored)]
-    pub fn is_point_explored(&mut self, point: JsPoint) -> bool {
-        self.fog_manager.is_point_explored(point.into())
+    #[wasm_bindgen(js_name = isOffsetExplored)]
+    pub fn is_offset_explored(&mut self, offset: JsGridOffset2D) -> bool {
+        self.fog_manager.is_offset_explored(offset.into())
     }
 
     #[wasm_bindgen(js_name = updateFog)]
     pub fn update_fog(&mut self) {
         self.fog_manager = FogManager::new();
-    }
-
-    #[wasm_bindgen(js_name = generateMaze)]
-    pub fn generate_maze(&self, width: usize, height: usize) -> JsObject {
-        Scene::new(width.min(500), height.min(500)).to_object()
     }
 
     #[wasm_bindgen(js_name = addRegion)]

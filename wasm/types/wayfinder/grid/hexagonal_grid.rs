@@ -534,7 +534,7 @@ impl BaseGrid<HexagonalNode, TokenHexagonalShape> for HexagonalGrid {
 
         for n1 in path.into_iter().dropping(1) {
             if let Some(fog_manager) = fog_manager {
-                if !fog_manager.is_point_explored(self.get_node_center_point(n1).into()) {
+                if !fog_manager.is_offset_explored(self.convert_node_to_offset(n1).into()) {
                     return None;
                 }
             }
@@ -1221,7 +1221,7 @@ impl AStar<HexagonalNode, TokenHexagonalShape> for HexagonalGrid {
                         })
                         .filter(|(successor, _cost)| {
                             if let Some(fog_manager) = fog_manager {
-                                fog_manager.is_point_explored(self.get_node_center_point(*successor).into())
+                                fog_manager.is_offset_explored(self.convert_node_to_offset(*successor).into())
                             } else {
                                 true
                             }

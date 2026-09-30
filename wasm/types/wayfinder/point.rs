@@ -34,6 +34,12 @@ impl From<ElevatedPoint> for Point {
     }
 }
 
+impl From<Point> for (f64, f64) {
+    fn from(value: Point) -> Self {
+        (value.x, value.y)
+    }
+}
+
 impl From<Point> for geo::Coord {
     fn from(Point { x, y }: Point) -> Self {
         geo::Coord { x, y }
@@ -90,6 +96,12 @@ impl From<JsElevatedPoint> for ElevatedPoint {
 impl From<Point> for ElevatedPoint {
     fn from(Point { x, y }: Point) -> Self {
         ElevatedPoint { x, y, elevation: 0.0 }
+    }
+}
+
+impl From<ElevatedPoint> for (f64, f64) {
+    fn from(value: ElevatedPoint) -> Self {
+        (value.x, value.y)
     }
 }
 

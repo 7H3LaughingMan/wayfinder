@@ -1,4 +1,4 @@
-use geo::{BoundingRect, Coord, Intersects, Rect};
+use geo::{BoundingRect, Intersects, Rect};
 use rstar::{AABB, RTreeObject};
 use std::{
     cell::{Ref, RefCell, RefMut},
@@ -30,7 +30,8 @@ impl<T> ByAddress<T> {
 }
 
 impl<T> Debug for ByAddress<T>
-where T: Debug
+where
+    T: Debug,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         self.borrow().fmt(f)
@@ -38,7 +39,8 @@ where T: Debug
 }
 
 impl<T> Display for ByAddress<T>
-where T: Display
+where
+    T: Display,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         self.borrow().fmt(f)
@@ -72,18 +74,20 @@ impl<T> Hash for ByAddress<T> {
 }
 
 impl<T> RTreeObject for ByAddress<T>
-where T: BoundingRect<f64, Output = Rect<f64>>
+where
+    T: BoundingRect<f64, Output = Rect<f64>>,
 {
-    type Envelope = AABB<Coord>;
+    type Envelope = AABB<(f64, f64)>;
 
     fn envelope(&self) -> Self::Envelope {
         let bounds = self.borrow().bounding_rect();
-        Self::Envelope::from_corners(bounds.min(), bounds.max())
+        Self::Envelope::from_corners(bounds.min().x_y(), bounds.max().x_y())
     }
 }
 
 impl<T, Rhs> Intersects<Rhs> for ByAddress<T>
-where T: Intersects<Rhs>
+where
+    T: Intersects<Rhs>,
 {
     fn intersects(&self, rhs: &Rhs) -> bool {
         self.borrow().intersects(rhs)

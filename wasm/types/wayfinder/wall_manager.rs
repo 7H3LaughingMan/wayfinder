@@ -46,7 +46,7 @@ impl WallManager {
 
     pub fn get_walls(&self, bounds: Rect) -> Vec<WallDocument> {
         self.tree
-            .locate_in_envelope_intersecting(&AABB::from_corners(bounds.min(), bounds.max()))
+            .locate_in_envelope_intersecting(AABB::from_corners(bounds.min().x_y(), bounds.max().x_y()))
             .map(|wall| wall.borrow().clone())
             .collect()
     }
@@ -55,7 +55,9 @@ impl WallManager {
         let line = Line::new(start, end);
         let bounds = line.bounding_rect();
 
-        for wall in self.tree.locate_in_envelope_intersecting(&AABB::from_corners(bounds.min(), bounds.max())) {
+        for wall in
+            self.tree.locate_in_envelope_intersecting(AABB::from_corners(bounds.min().x_y(), bounds.max().x_y()))
+        {
             if wall.borrow().included_in_level(level) && wall.borrow().blocks_movement() {
                 if wall.intersects(&line) {
                     return true;

@@ -46,7 +46,7 @@ impl RegionManager {
 
     fn get_intersections(&self, start: ElevatedPoint, end: ElevatedPoint) -> HashSet<ByAddress<RegionDocument>> {
         self.tree
-            .locate_in_envelope_intersecting(&AABB::from_corners(start.into(), end.into()))
+            .locate_in_envelope_intersecting(AABB::from_corners(start.into(), end.into()))
             .filter(|region| region.intersects(&(start, end)))
             .cloned()
             .collect()

@@ -1,6 +1,5 @@
-use geo::Rect;
-
 use crate::types::pixi::JsRectangle;
+use geo::Rect;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Rectangle {

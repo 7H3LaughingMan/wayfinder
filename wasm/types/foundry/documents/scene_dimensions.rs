@@ -47,8 +47,8 @@ extern "C" {
     pub fn max_r(this: &JsSceneDimensions) -> f64;
 
     #[wasm_bindgen(method, getter)]
-    pub fn rows(this: &JsSceneDimensions) -> f64;
+    pub fn rows(this: &JsSceneDimensions) -> i32;
 
     #[wasm_bindgen(method, getter)]
-    pub fn columns(this: &JsSceneDimensions) -> f64;
+    pub fn columns(this: &JsSceneDimensions) -> i32;
 }

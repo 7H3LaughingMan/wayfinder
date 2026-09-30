@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [14.1.3] - 2026-09-30
+
+### Changed
+
+- Removed maze generation, this was mostly used for debug purposes
+- Fog exploration data is now stored as a BitVec (Bit Vector)
+  - Previously Wayfinder was storing a vector of bytes that represented the red channel similiar to how Foundry does it, that means a 3,200 x 3,200 map result in a vector containg 10,240,000 bytes. Then it was using that data to check the center pixel and it's surronding pixels of a grid to see if a point was "explored".
+  - It now pre-processes the fog exploration texture and generates a vector where each element represents a single grid space and if it's been "explored". The difference between a bit vector and a vector of booleans is just how the underlaying data is stored, while a boolean can either be true or false it still takes up an entire byte but a bit vector packs the data so that a single byte can represent eight booleans. So for a 32 x 32 grid would result in a boolean vector that contains 1,024 bytes, but a bit vector would only be 128 bytes.
+
+### Fixed
+
+- When generating the fog exploration texture that Wayfinder uses we not account for textures that result in a single row of pixel data that ends up being padded with extra bytes. By default WebGL sets PACK_ALIGNMENT to 4, meaning is a single row of pixel data isn't divisible by 4 bytes it will pad the row with extra data to make it divisible.
+
 ## [14.1.2] - 2026-09-27
 
 ### Changed
@@ -184,6 +197,7 @@ Foundry Virtual Tabletop - Version 13 Support!
 - Fixed a problem with checking fog exploration where it was slightly off when checking pixels
 - Improved Fog Exploration
 
+[14.1.3]: https://github.com/7H3LaughingMan/wayfinder/compare/v14.1.2...v14.1.3
 [14.1.2]: https://github.com/7H3LaughingMan/wayfinder/compare/v14.1.1...v14.1.2
 [14.1.1]: https://github.com/7H3LaughingMan/wayfinder/compare/v14.1.0...v14.1.1
 [14.1.0]: https://github.com/7H3LaughingMan/wayfinder/compare/v14.0.1...v14.1.0

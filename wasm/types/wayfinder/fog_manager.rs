@@ -1,23 +1,29 @@
 use crate::{
     CANVAS,
-    types::{foundry::canvas::JsCanvas, helpers::JsObject, pixi::JsMatrix, wayfinder::Point},
+    types::{
+        foundry::canvas::JsCanvas,
+        helpers::JsObject,
+        pixi::JsMatrix,
+        wayfinder::{GridOffset2D, GridOffset3D, Point, SceneDimensions, grid::Grid},
+    },
 };
-use geo::{Contains, Coord, Rect};
+use bitvec::vec::BitVec;
 use std::fmt::Debug;
 use web_sys::WebGl2RenderingContext;
 
 pub struct FogManager {
-    pub pixels: Vec<u8>,
-    pub resolution: f64,
-    pub scene_rect: Rect,
-    pub width: i32,
-    pub height: i32,
+    pub explored: BitVec,
+    pub rows: i32,
+    pub columns: i32,
 }
 
 impl FogManager {
     pub fn new() -> Self {
+        let grid = Grid::new();
+        let scene_dimensions: SceneDimensions = CANVAS.scene().unwrap().dimensions().into();
         let renderer = CANVAS.app().renderer();
         let gl = renderer.gl();
+        let pack_alignment = gl.get_parameter(WebGl2RenderingContext::PACK_ALIGNMENT).unwrap().as_f64().unwrap() as i32;
 
         let render_texture = JsCanvas::get_render_texture(
             JsObject::new()
@@ -46,12 +52,10 @@ impl FogManager {
 
         let framebuffer = render_texture.framebuffer();
         let gl_framebuffer = framebuffer.gl_framebuffers().get(renderer.CONTEXT_UID()).unwrap();
-
-        let scene_rect: Rect = CANVAS.scene().unwrap().dimensions().scene_rect().into();
         let resolution = render_texture.resolution();
-        let width = framebuffer.width() as i32;
-        let height = framebuffer.height() as i32;
-        let mut pixels = vec![0_u8; (width * height) as usize];
+        let (width, height) = (framebuffer.width() as i32, framebuffer.height() as i32);
+        let (real_width, real_height) = (num::Integer::next_multiple_of(&width, &pack_alignment), height);
+        let mut pixels = vec![0_u8; (real_width * real_height) as usize];
 
         gl.bind_framebuffer(WebGl2RenderingContext::FRAMEBUFFER, Option::Some(&gl_framebuffer.framebuffer()));
 
@@ -68,46 +72,65 @@ impl FogManager {
         gl.bind_framebuffer(WebGl2RenderingContext::FRAMEBUFFER, None);
         render_texture.destroy(Some(true));
 
-        FogManager { pixels, resolution, scene_rect, width, height }
-    }
+        let is_point_explored = |Point { mut x, mut y }: Point| {
+            if !scene_dimensions.scene_rect.contains(x, y) {
+                return false;
+            }
 
-    pub fn is_point_explored(&self, Point { mut x, mut y }: Point) -> bool {
-        if !self.scene_rect.contains(&(Coord { x, y })) {
-            return false;
-        }
+            x -= scene_dimensions.scene_rect.x;
+            y -= scene_dimensions.scene_rect.y;
 
-        x -= self.scene_rect.min().x;
-        y -= self.scene_rect.min().y;
+            let x1 = (x * resolution).floor() as i32;
+            let x0 = if x1 > 0 { x1 - 1 } else { 0 };
+            let x2 = if x1 < width { x1 + 1 } else { width };
 
-        let x1 = (x * self.resolution).floor() as i32;
-        let x0 = if x1 > 0 { x1 - 1 } else { 0 };
-        let x2 = if x1 < self.width { x1 + 1 } else { self.width };
+            let y1 = (y * resolution).floor() as i32;
+            let y0 = if y1 > 0 { y1 - 1 } else { 0 };
+            let y2 = if y1 < height { y1 + 1 } else { height };
 
-        let y1 = (y * self.resolution).floor() as i32;
-        let y0 = if y1 > 0 { y1 - 1 } else { 0 };
-        let y2 = if y1 < self.height { y1 + 1 } else { self.height };
-
-        for y in y0..=y2 {
-            let k = y * self.width;
-            for x in x0..=x2 {
-                if self.pixels[(k + x) as usize] != 0 {
-                    return true;
+            for y in y0..=y2 {
+                let k = y * real_width;
+                for x in x0..=x2 {
+                    if pixels[(k + x) as usize] != 0 {
+                        return true;
+                    }
                 }
+            }
+
+            false
+        };
+
+        let rows = scene_dimensions.rows;
+        let columns = scene_dimensions.columns;
+        let mut explored = BitVec::repeat(false, (rows * columns) as usize);
+
+        for j in 0..columns {
+            for i in 0..rows {
+                explored.set(
+                    ((i * columns) + j) as usize,
+                    is_point_explored(grid.get_center_point(GridOffset3D { i, j, k: 0 }).into()),
+                );
             }
         }
 
-        false
+        FogManager { explored, rows, columns }
+    }
+
+    pub fn is_offset_explored(&self, GridOffset2D { i, j }: GridOffset2D) -> bool {
+        if i < 0 || j < 0 || i >= self.rows || j >= self.columns {
+            false
+        } else {
+            self.explored[((i * self.columns) + j) as usize]
+        }
     }
 }
 
 impl Debug for FogManager {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("FogManager")
-            .field("pixels", &self.pixels.len())
-            .field("resolution", &self.resolution)
-            .field("scene_rect", &self.scene_rect)
-            .field("width", &self.width)
-            .field("height", &self.height)
+            .field("explored", &self.explored.clone().into_vec())
+            .field("rows", &self.rows)
+            .field("columns", &self.columns)
             .finish()
     }
 }
