@@ -22,9 +22,7 @@ jobs:
           cache: "pnpm"
 
       - name: Setup Rust
-        run: |
-          rustup update
-          cargo install wasm-pack
+        run: curl https://wasm-bindgen.github.io/wasm-pack/installer/init.sh -sSf | sh
 
       - name: Install Dependencies
         run: pnpm install
